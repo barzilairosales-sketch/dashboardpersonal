@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Panel ENARM</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Source+Serif+4:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F1F5F4;--card:#fff;--ink:#14262B;--mut:#5B6E72;--teal:#0F7B78;--on:#fff;--tealbg:#DDEFEE;--ok:#1E9E5A;--bad:#D1434B;--amb:#E09A2B;--line:#D3DEDC;--soft:#F6FBFA;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0F1B1E;--card:#172A2E;--ink:#E6F0EF;--mut:#93A9AC;--teal:#3CC1BC;--on:#06201F;--tealbg:#1D3B3C;--line:#2A4549;--soft:#1B3135;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0F1B1E;--card:#172A2E;--ink:#E6F0EF;--mut:#93A9AC;--teal:#3CC1BC;--on:#06201F;--tealbg:#1D3B3C;--line:#2A4549;--soft:#1B3135;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 'Source Serif 4',Georgia,serif}
+h1,h2,h3,button,.ui,nav a,label{font-family:'Bricolage Grotesque',system-ui,sans-serif}
+button{cursor:pointer;border:0;font-size:15px;color:inherit;background:none}
+:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+nav{position:sticky;top:0;align-self:start;height:100vh;padding:22px 14px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+nav .brand{font:800 20px 'Bricolage Grotesque';padding:0 10px 18px;letter-spacing:-.5px}
+nav a{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:600;color:var(--mut);user-select:none}
+nav a:hover{background:var(--soft)}nav a.on{background:var(--tealbg);color:var(--teal)}
+nav a i{font-style:normal;width:22px;text-align:center}
+nav a b{margin-left:auto;background:var(--bad);color:#fff;border-radius:99px;font-size:12px;padding:0 8px}
+main{padding:28px;max-width:900px;width:100%;margin:0 auto;overflow-x:hidden}
+h1{font-size:clamp(30px,5vw,44px);line-height:1.05;margin:0 0 6px;letter-spacing:-1.5px;font-weight:800}
+h2{font-size:22px;margin:30px 0 12px}
+.sub{color:var(--mut);margin:0 0 22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.btn{background:var(--teal);color:var(--on);padding:12px 22px;border-radius:11px;font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.ghost{border:2px solid var(--line);padding:10px 18px;border-radius:11px;font-weight:600}
+.sm{padding:6px 12px;font-size:13px;border-radius:9px}
+.tag{display:inline-block;background:var(--tealbg);color:var(--teal);padding:2px 11px;border-radius:99px;font-size:13px;font-weight:700;font-family:'Bricolage Grotesque'}
+.mut{color:var(--mut)}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.sp{justify-content:space-between}
+.stats{display:flex;gap:26px;flex-wrap:wrap;margin:6px 0 4px}
+.stats div{font:600 14px 'Bricolage Grotesque';color:var(--mut)}.stats b{display:block;font-size:30px;color:var(--ink);letter-spacing:-1px}
+.hm{display:flex;align-items:center;gap:12px;margin:9px 0}
+.hm span:first-child{flex:0 0 38%;font-size:15px}
+.hm .tr{flex:1;height:12px;background:var(--line);border-radius:9px;overflow:hidden}.hm .tr i{display:block;height:100%;border-radius:9px}
+.chart{display:flex;align-items:flex-end;gap:8px;height:110px;margin-top:10px}
+.chart div{flex:1;background:var(--teal);border-radius:6px 6px 0 0;min-height:4px;position:relative}
+.chart small{position:absolute;top:-18px;left:0;right:0;text-align:center;font:600 11px 'Bricolage Grotesque';color:var(--mut)}
+input,select,textarea{width:100%;padding:11px;font:16px 'Source Serif 4',serif;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink)}
+textarea{min-height:90px;resize:vertical}
+label{display:block;font-weight:700;margin:14px 0 6px;font-size:14px}
+.pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{padding:10px 20px;border-radius:99px;border:2px solid var(--line);font-weight:700;background:var(--card)}
+.pill.sel{background:var(--teal);border-color:var(--teal);color:var(--on)}
+.esc{padding-left:14px;border-left:4px solid var(--teal);margin:14px 0}
+.q{font:700 18px 'Bricolage Grotesque';margin:14px 0}
+.opt{display:flex;gap:12px;width:100%;text-align:left;background:var(--card);border:2px solid var(--line);padding:13px;border-radius:12px;margin-bottom:9px;font:16px 'Source Serif 4',serif}
+.opt b{font-family:'Bricolage Grotesque';color:var(--teal);min-width:18px}
+.opt:hover:not(:disabled){border-color:var(--teal)}
+.opt.ok{background:var(--ok);border-color:var(--ok);color:#fff}.opt.bad{background:var(--bad);border-color:var(--bad);color:#fff}
+.opt.ok b,.opt.bad b{color:#fff}.opt.rev{border:3px solid var(--ok)}
+.fb{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:6px}
+.dg{display:flex;gap:8px;margin-top:8px}.dg button{flex:1;padding:10px;border:2px solid var(--line);border-radius:10px;font-weight:700;background:var(--card)}
+.dg .sel{color:#fff}.dg .facil.sel{background:var(--ok);border-color:var(--ok)}.dg .intermedio.sel{background:var(--amb);border-color:var(--amb)}.dg .dificil.sel{background:var(--bad);border-color:var(--bad)}
+.bar{height:8px;background:var(--line);border-radius:9px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--teal)}
+.item{border-left:4px solid var(--bad);background:var(--card);border-radius:0 12px 12px 0;padding:12px 14px;margin:10px 0}
+details summary{cursor:pointer;font-weight:600;color:var(--teal)}
+.flip{min-height:170px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:19px;padding:24px;cursor:pointer}
+.empty{text-align:center;color:var(--mut);padding:34px 10px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:99px;font:600 14px 'Bricolage Grotesque';z-index:30}
+@media(max-width:760px){
+ .app{display:block}
+ nav{position:fixed;inset:auto 0 0 0;top:auto;height:auto;flex-direction:row;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line);border-right:0;z-index:20;justify-content:space-around}
+ nav .brand{display:none}nav a{flex-direction:column;gap:0;font-size:11px;padding:6px 4px;flex:1;text-align:center}nav a b{position:absolute;margin:0;transform:translate(14px,-4px)}
+ main{padding:18px 16px 96px}.hm span:first-child{flex-basis:44%}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head><body>
+<div class="app"><nav id="nav" aria-label="Secciones"></nav><main id="main"></main></div>
+<script>
+const TEMAS=[
+ {id:'todos',nombre:'Mixto (todos los temas activos)',activo:true},
+ {id:'ped',nombre:'Pediatría general',activo:true},
+ {id:'neo',nombre:'Neonatología',activo:true},
+ {id:'tox',nombre:'Toxicología / Urgencias',activo:true},
+ {id:'inf',nombre:'Infectología',activo:true},{id:'neu',nombre:'Neumología',activo:true},
+ {id:'car',nombre:'Cardiología',activo:true},{id:'gas',nombre:'Gastroenterología',activo:true},
+ {id:'nef',nombre:'Nefrología',activo:true},{id:'end',nombre:'Endocrinología',activo:true},
+ {id:'nlg',nombre:'Neurología',activo:true},{id:'hem',nombre:'Hematología',activo:true},
+ {id:'urg',nombre:'Urgencias',activo:false}
+];
+
+/* ============ BANCO_CASOS ============
+   opciones[0] = SIEMPRE la correcta (el simulador las mezcla y reasigna A–E).
+   En justificacion no cites letras. Cada pregunta del PDF se convirtió en un caso
+   independiente con el escenario acumulado. */
+const BANCO_CASOS=[
+{id:1,tema:'tox',subtema:'Intoxicación por organofosforados',
+escenario:'Preescolar masculino de 3 años 4 meses, 15 kg (p50), talla 98 cm (p50). Sin antecedentes perinatales; vacunas completas. Hace 40 min jugaba junto a un envase abierto de insecticida en zona agrícola. Somnoliento, sialorrea, epífora, diaforesis profusa, miosis de 1 mm, broncorrea y sibilancias. FC 62 lpm, FR 34 rpm, TA 80/50, SatO₂ 86% al aire.',
+pregunta:'¿Cuál es la medida prioritaria e inmediata?',
+opciones:['Asegurar vía aérea, oxígeno, aspirar secreciones, descontaminar la piel y administrar atropina IV','Lavado gástrico con sonda y carbón activado 1 g/kg','Pralidoxima IV en bolo de 25 mg/kg antes de cualquier otro fármaco','Inducir vómito con jarabe de ipecacuana y canalizar dos vías','Fisostigmina IV lenta 0.02 mg/kg'],
+justificacion:'La muerte temprana se debe a falla respiratoria por broncorrea y broncoespasmo; la atropina y el soporte ventilatorio son prioritarios junto con retirar ropa y lavar la piel. El lavado gástrico y carbón sin proteger la vía aérea no son prioridad, la pralidoxima no sustituye a la atropina, la ipecacuana está proscrita y la fisostigmina (inhibidor de colinesterasa) agravaría el cuadro.',
+referencia:'AHA. Pediatric Advanced Life Support Guidelines, Circulation 2020 (actualización 2023).'},
+{id:2,tema:'tox',subtema:'Intoxicación por organofosforados',
+escenario:'Preescolar de 3 años, 15 kg, intoxicado por clorpirifós (colinesterasa eritrocitaria al 18%). Tras descontaminación, oxígeno y dos dosis de atropina 0.05 mg/kg IV, cedió la broncorrea y la FC subió a 115 lpm. Persisten fasciculaciones generalizadas y debilidad proximal.',
+pregunta:'¿Cuál es el tratamiento específico indicado ahora?',
+opciones:['Pralidoxima 25–50 mg/kg IV de carga seguida de infusión continua','Suspender atropina y solo vigilar en terapia intensiva','Flumazenil 0.01 mg/kg IV','Bicarbonato de sodio 1 mEq/kg para alcalinizar la orina','Azul de metileno 1 mg/kg IV'],
+justificacion:'La atropina solo revierte efectos muscarínicos; las fasciculaciones y la debilidad son nicotínicas. La oxima reactiva la acetilcolinesterasa antes del envejecimiento enzimático. Suspender atropina causaría rebote colinérgico; flumazenil, bicarbonato y azul de metileno no actúan en este mecanismo.',
+referencia:'Eddleston M, Chowdhury FR. Br J Clin Pharmacol 2021; AHA PALS 2023.'},
+{id:3,tema:'tox',subtema:'Síndrome intermedio por organofosforados',
+escenario:'Preescolar de 3 años intoxicado por clorpirifós, tratado con atropina y pralidoxima con buena evolución las primeras 48 h. Al tercer día presenta súbitamente dificultad respiratoria, incapacidad para elevar la cabeza, debilidad de flexores del cuello y pares craneales; requiere intubación. Sin miosis ni broncorrea.',
+pregunta:'¿Qué complicación tardía explica el cuadro?',
+opciones:['Síndrome intermedio','Neuropatía retardada inducida por organofosforados (OPIDN)','Síndrome neuroléptico maligno','Miastenia gravis autoinmune desencadenada por tóxicos','Encefalopatía hipóxico-isquémica tardía'],
+justificacion:'El síndrome intermedio aparece entre 24 y 96 h tras la crisis colinérgica, con parálisis de músculos proximales, flexores del cuello, pares craneales y respiratorios; no responde a atropina y requiere ventilación. La OPIDN aparece 1–3 semanas después con debilidad distal en guante y calcetín.',
+referencia:'Jayawardane P, et al. Clin Toxicol 2022; Eddleston M, Br J Clin Pharmacol 2021.'},
+{id:4,tema:'tox',subtema:'Intoxicación por paraquat',
+escenario:'Escolar masculino de 7 años, 24 kg (p50). Vacunas completas. Hace 90 min ingirió ~15 mL de herbicida (paraquat 20%) guardado en botella de refresco. Dolor urente oral y retroesternal, odinofagia, sialorrea, vómito con estrías de sangre, ulceraciones orales. FC 116, FR 22, TA 102/64, SatO₂ 95% al aire.',
+pregunta:'¿Qué intervención de soporte está contraindicada mientras la SatO₂ sea >88–90%?',
+opciones:['Oxígeno suplementario de rutina','Vía venosa e hidratación con solución salina 0.9%','Adsorbentes tempranos (carbón activado o tierra de Fuller)','Biometría, función renal y gasometría basal','Analgésicos IV y ondansetrón'],
+justificacion:'El paraquat genera radicales superóxido por ciclo redox en el neumocito; el oxígeno aporta sustrato y acelera la alveolitis y la fibrosis. Solo se da O₂ si hay hipoxemia grave (SatO₂ <88%). Los adsorbentes son útiles en las primeras 2–4 h.',
+referencia:'Gawarammana IB, Buckley NA. Br J Clin Pharmacol 2022; Eddleston M, 2021.'},
+{id:5,tema:'tox',subtema:'Intoxicación por opioides',
+escenario:'Lactante de 14 meses, 10 kg (p50). Encontrada inconsciente; la abuela usa parches de fentanilo. Se ventiló con bolsa-mascarilla y se dio naloxona 1 mg IV con recuperación (FR 24, SatO₂ 98%). A los 45 min vuelve a somnolencia profunda con FR 8 rpm; se halla un parche de fentanilo adherido en la espalda, que se retira.',
+pregunta:'¿Por qué recurrió la depresión respiratoria y qué conducta farmacológica corresponde?',
+opciones:['La vida media de la naloxona (30–90 min) es menor que la del depósito transdérmico; nueva dosis e infusión continua a ~2/3 de la dosis efectiva por hora','Taquifilaxia irreversible a naloxona; exanguinotransfusión','Edema cerebral por naloxona; manitol IV','Los parches contienen benzodiacepinas; flumazenil IV','Hipoglucemia tardía; bolo de glucosa al 50%'],
+justificacion:'El fentanilo transdérmico deja un reservorio cutáneo de liberación prolongada y la naloxona dura menos, por lo que hay renarcotización. Se repite la dosis y se deja infusión horaria equivalente a dos tercios de la dosis efectiva, ajustando según la respiración.',
+referencia:'Lavonas EJ, et al. AHA Focused Update on Poisoning, Circulation 2023;148:e149.'},
+{id:6,tema:'tox',subtema:'Intoxicación por metanol',
+escenario:'Adolescente femenino de 15 años, 55 kg. Hace 14 h bebió una bebida adulterada. Cefalea, náuseas, Kussmaul, visión “en tormenta de nieve”, edema de papila. Na 140, Cl 102, HCO₃ 8, pH 7.12, metanol sérico 68 mg/dL; anión gap 30 y brecha osmolar ≈41. Se inició hidratación y bicarbonato.',
+pregunta:'¿Cuál es el antídoto de primera línea y el cofactor que debe asociarse?',
+opciones:['Fomepizol (15 mg/kg de carga, luego 10 mg/kg cada 12 h) más ácido folínico o fólico','N-acetilcisteína más piridoxina','Naloxona más tiamina','Azul de metileno más vitamina C','Pralidoxima más vitamina K'],
+justificacion:'El fomepizol inhibe la alcohol deshidrogenasa y evita la formación de formaldehído y ácido fórmico sin depresión del SNC. El ácido folínico favorece la degradación del formiato a CO₂ y agua. Con acidosis grave, déficit visual o metanol >50 mg/dL se añade hemodiálisis.',
+referencia:'Lavonas EJ, et al. Circulation 2023; EXTRIP Workgroup, Crit Care Med 2021–2023.'},
+{id:7,tema:'neo',subtema:'Síndrome de dificultad respiratoria',
+escenario:'RN masculino de 30 SDG, 1,350 g (p50), por cesárea por preeclampsia severa, sin corticoides prenatales. Apgar 6/8. A los 15 min: FR 72, quejido audible sin estetoscopio, aleteo, tiraje, disociación toracoabdominal (Silverman-Andersen 7), cianosis central; requiere FiO₂ 45% para SatO₂ 91%. Respira espontáneamente.',
+pregunta:'¿Cuál es el soporte respiratorio inicial más adecuado?',
+opciones:['CPAP nasal temprano con PEEP de 6–8 cmH₂O','Intubación y ventilación mecánica invasiva de rutina','Oxígeno al 80% por casco cefálico y observar 4 horas','Ventilación de alta frecuencia oscilatoria de primera línea','Furosemida IV 1 mg/kg'],
+justificacion:'En el pretérmino que respira espontáneamente se recomienda CPAP desde los primeros minutos para reclutar alvéolos, lo que reduce ventilación invasiva y displasia broncopulmonar. El casco no da presión positiva espiratoria y los diuréticos no están indicados.',
+referencia:'Sweet DG, et al. European Consensus Guidelines on RDS: 2022 Update. Neonatology 2023;120:3-23.'},
+{id:8,tema:'neo',subtema:'Complicaciones del SDR: neumotórax',
+escenario:'RN femenino de 28 SDG, 1,020 g (p45), gemelar, sin corticoides prenatales, intubada con surfactante y ventilación mecánica. A las 18 h, con FiO₂ 30%, presenta desaturación a 68%, FC 78, PAM 22 mmHg, abombamiento del hemitórax derecho, choque de punta desplazado a la izquierda y ausencia de murmullo vesicular derecho.',
+pregunta:'¿Cuál es el diagnóstico y la acción inmediata?',
+opciones:['Neumotórax a tensión derecho; transiluminación y toracocentesis descompresiva sin esperar radiografía','Extubación accidental; retirar el tubo y ventilar con bolsa-mascarilla','Hemorragia intraventricular grado IV; vitamina K y plasma','Tapón mucoso en el tubo; instilar 5 mL de solución salina y aspirar','Atelectasia izquierda; subir PIP a 35 cmH₂O'],
+justificacion:'La baja distensibilidad y la ruptura alveolar en el pulmón ventilado explican el neumotórax a tensión, con compromiso hemodinámico por desviación mediastínica. Ante inestabilidad grave no se retrasa la descompresión por esperar imagen.',
+referencia:'AHA/AAP. Textbook of Neonatal Resuscitation, 8th ed., 2021; Sweet DG, Neonatology 2023.'},
+{id:9,tema:'neo',subtema:'Taquipnea transitoria del recién nacido',
+escenario:'RN masculino de 38 SDG, 3,650 g (p75), cesárea programada sin trabajo de parto; madre con diabetes gestacional. Diagnóstico confirmado de taquipnea transitoria (radiografía con cisuritis y trama perihiliar; leucocitos 14,200, PCR negativa, glucosa 68). Con puntas nasales SatO₂ 95%, pero FR 74 rpm.',
+pregunta:'¿Cuál es el manejo más apropiado ahora?',
+opciones:['Ayuno con líquidos IV (glucosada 10% a 60–70 mL/kg/día), oxígeno para SatO₂ 90–95% y vigilancia de la FR','Furosemida IV 1 mg/kg cada 12 h','Salbutamol nebulizado cada 4 h de rutina','Surfactante intratraqueal 100 mg/kg','Seno materno a libre demanda a pesar de FR 74 rpm'],
+justificacion:'Es un cuadro autolimitado (48–72 h). Con FR >70 rpm hay alto riesgo de broncoaspiración, por lo que se indica ayuno e hidratación IV. Ni furosemida ni salbutamol tienen evidencia suficiente para uso rutinario.',
+referencia:'Gupta N, et al. Cochrane Database Syst Rev 2021;2:CD011466; Alhassen Z, J Perinatol 2021.'},
+{id:10,tema:'neo',subtema:'Encefalopatía hipóxico-isquémica',
+escenario:'RN masculino de 39 SDG, 3,300 g (p50), con DPPNI y bradicardia fetal de 18 min; cesárea urgente. Reanimación con VPP, intubación y compresiones 90 s. Apgar 2/4/5. Gasometría de cordón: pH 6.92, déficit de base −19, lactato 11.4. A las 2 h: letargia, hipotonía, ROT disminuidos, Moro incompleto, miosis y crisis clónica focal de 45 s.',
+pregunta:'¿Qué grado de EHI presenta y cuál es la intervención neuroprotectora estándar?',
+opciones:['EHI moderada (Sarnat II); hipotermia terapéutica a 33.5 °C iniciada antes de las 6 h, durante 72 h','EHI leve; observación y normotermia estricta','EHI grave; manitol 1 g/kg y dexametasona','EHI leve; sulfato de magnesio posnatal','EHI grave; coma barbitúrico con tiopental por 7 días'],
+justificacion:'Cumple criterios de elegibilidad (≥36 SDG, evento centinela, acidosis grave, Apgar ≤5 a los 10 min) con signos de EHI moderada. La hipotermia iniciada en las primeras 6 h por 72 h es la única intervención que reduce mortalidad y discapacidad grave.',
+referencia:'AAP Committee on Fetus and Newborn. Hypothermia and Neonatal Encephalopathy. Pediatrics 2020 (reafirmado 2023).'},
+{id:11,tema:'neo',subtema:'Hiperbilirrubinemia grave',
+escenario:'RN masculino de 36 SDG, 2,680 g (p35), madre O Rh negativo, bebé A Rh positivo. A las 42 h: ictericia hasta plantas, letargia, hipotonía, mala succión y llanto agudo. BST 24.6 mg/dL (indirecta 23.4), Hb 10.1, reticulocitos 11%, Coombs directo ++++, albúmina 2.8 g/dL.',
+pregunta:'¿Cuál es la conducta terapéutica inmediata?',
+opciones:['UCIN con fototerapia intensiva, hidratación IV y exanguinotransfusión de doble volumen urgente','Fototerapia convencional y repetir bilirrubina en 12 h','Solo fenobarbital IV y ayuno 48 h','Transfusión simple de concentrado eritrocitario 15 mL/kg sin recambio','Albúmina IV como monoterapia'],
+justificacion:'Hay signos de encefalopatía bilirrubínica aguda y la BST supera el umbral de exanguinotransfusión para 36 SDG con factores de riesgo; es una emergencia que exige recambio mientras se mantiene fototerapia intensiva máxima.',
+referencia:'Kemper AR, et al. AAP Clinical Practice Guideline, Hyperbilirubinemia ≥35 weeks. Pediatrics 2022;150:e2022058859.'},
+{id:12,tema:'ped',subtema:'Colestasis neonatal / atresia de vías biliares',
+escenario:'Lactante masculino de 6 semanas, nacido a término (3,250 g); hoy 4,100 g (p25, desaceleración) y 55 cm. Ictericia desde la 2ª semana, acolia y coluria; hepatomegalia de 3.5 cm y esplenomegalia. BD 6.4 mg/dL, GGT 640 U/L, INR 1.1. Ultrasonido: vesícula atrófica sin contracción y signo del cordón triangular.',
+pregunta:'¿Cuál es el diagnóstico más probable y el procedimiento para confirmarlo y tratarlo?',
+opciones:['Atresia de vías biliares; colangiografía intraoperatoria con biopsia y portoenterostomía de Kasai antes de los 60 días','Síndrome de Gilbert; ácido ursodesoxicólico exclusivamente','Galactosemia clásica; fórmula de soya','Quiste de colédoco; drenaje percutáneo','Hepatitis neonatal idiopática; interferón alfa'],
+justificacion:'GGT muy elevada con signo del cordón triangular es altamente sugestiva de atresia biliar, principal causa quirúrgica de colestasis neonatal. El pronóstico depende de hacer el Kasai idealmente antes de 45–60 días.',
+referencia:'Fawaz R, et al. NASPGHAN/ESPGHAN Guideline on Cholestatic Jaundice in Infants, JPGN; Davenport M, J Pediatr Surg 2021–2023.'},
+{id:13,tema:'ped',subtema:'Maltrato infantil / trauma abusivo',
+escenario:'Lactante masculino de 5 meses, 6.8 kg (p25), 65 cm, PC 44.5 cm (p90). Irritabilidad y vómito en proyectil por 12 h. Refieren que “se cayó solo de la cama de 40 cm” hace 2 días. Hipoactivo, pálido, fontanela abombada y tensa, equimosis en pabellón auricular izquierdo y dos lineales en tórax izquierdo.',
+pregunta:'¿Cuál es la sospecha prioritaria y los dos estudios iniciales?',
+opciones:['Trauma craneoencefálico abusivo; TC de cráneo simple urgente y fondo de ojo dilatado','Meningitis bacteriana; punción lumbar antes de cualquier imagen','Estenosis hipertrófica del píloro; ultrasonido pilórico y gasometría','Hemofilia A grave; solo tiempos de coagulación en consulta externa','Intususcepción; enema neumático'],
+justificacion:'Equimosis en torso y oreja y cualquier equimosis en lactante que no gatea (TEN-4-FACESp), con mecanismo inconsistente, sugieren abuso. La TC identifica hematoma subdural y el fondo de ojo busca hemorragias retinianas; la punción lumbar está contraindicada con hipertensión intracraneal.',
+referencia:'Narang SK, et al. AAP. Abusive Head Trauma in Infants and Children. Pediatrics 2020;145:e20200203; Pierce MC, JAMA Netw Open 2021.'},
+{id:14,tema:'ped',subtema:'Crup (laringotraqueítis aguda)',
+escenario:'Preescolar masculino de 2 años 1 mes, 12.5 kg (p50), talla 88 cm; vacunas completas. Rinorrea y febrícula 24 h; hace 3 h tos perruna, disfonía y ruido inspiratorio. Inquieto, estridor inspiratorio en reposo, tiraje supraesternal e intercostal moderado, buena entrada de aire sin sibilancias. FC 132, FR 34, SatO₂ 95%, T 37.8 °C.',
+pregunta:'¿Cómo se clasifica y cuál es el tratamiento farmacológico inicial?',
+opciones:['Crup moderado; dexametasona 0.6 mg/kg (7.5 mg) VO o IM más adrenalina nebulizada','Crup leve; lavado nasal y observación sin medicamentos','Epiglotitis por Hib; intubación inmediata y ceftriaxona','Traqueítis bacteriana; vancomicina más cefotaxima y broncoscopia','Bronquiolitis; salbutamol e ipratropio'],
+justificacion:'Estridor en reposo con tiraje moderado sin alteración del estado de alerta es crup moderado. Todo crup recibe una dosis única de dexametasona 0.6 mg/kg (máx. 10–16 mg) y, si es moderado a grave, adrenalina nebulizada para reducir el edema subglótico.',
+referencia:'Canadian Paediatric Society. Acute management of croup in the ED. Paediatr Child Health 2021 (reafirmado 2023).'},
+{id:15,tema:'neu',subtema:'Neumonía adquirida en la comunidad',
+escenario:'Preescolar femenino de 3 años 2 meses, 14.5 kg (p50), talla 95 cm (p50); vacunas completas, incluidas neumococo y Hib. 3 días de fiebre 39.2 °C, tos productiva y respiración rápida. Alerta, tolera la vía oral, sin tiraje; estertores focales y soplo tubárico en base derecha. FC 128, FR 46, SatO₂ 95%, T 38.8 °C.',
+pregunta:'¿Cuál es el abordaje inicial de primera línea?',
+opciones:['Diagnóstico clínico de NAC no complicada sin radiografía ni laboratorios de rutina; amoxicilina 90 mg/kg/día en dos dosis','Radiografía PA y lateral, hemocultivos y biometría antes de tratar','Hospitalizar con ceftriaxona más vancomicina','Azitromicina 10 mg/kg/día en monoterapia','Solo tratamiento sintomático por probable cuadro viral'],
+justificacion:'En niño previamente sano con NAC leve-moderada ambulatoria no se recomiendan radiografía ni laboratorios de rutina. S. pneumoniae predomina en preescolares y la amoxicilina a dosis altas supera la resistencia por PBP; los macrólidos no son primera línea.',
+referencia:'NICE NG138, Pneumonia (community-acquired): antimicrobial prescribing, actualizado 2023.'},
+{id:16,tema:'neu',subtema:'Bronquiolitis',
+escenario:'Lactante masculino de 4 meses, 6.5 kg (p50), talla 63 cm; 38 SDG, lactancia exclusiva, vacunas al día. En invierno: 48 h de rinorrea y tos, y 8 h de dificultad respiratoria con rechazo al alimento. FR 62, aleteo, tiraje, sibilancias y crepitantes, SatO₂ 89%. Ingresó con oxígeno e hidratación por sonda; un residente propone salbutamol, prednisolona y fisioterapia torácica.',
+pregunta:'¿Cuál es la recomendación sobre broncodilatadores, corticoides y fisioterapia?',
+opciones:['Ninguno debe usarse de rutina: no mejoran ingreso, duración ni resolución clínica','Todos están recomendados porque reducen la estancia 50%','Salbutamol nebulizado combinado con dexametasona IV','Fisioterapia con percusión torácica cada 2 horas','Montelukast oral desde el primer día'],
+justificacion:'La fisiopatología es edema submucoso, necrosis epitelial y tapones de moco, no broncoespasmo. Los pilares son oxígeno, hidratación y desobstrucción nasal; AAP, NICE y revisiones recientes recomiendan evitar broncodilatadores, corticoides, antibióticos y fisioterapia convencional.',
+referencia:'Dalziel SR, et al. Bronchiolitis. Lancet 2022;400:392-406; NICE NG9 (2021).'},
+{id:17,tema:'neu',subtema:'Crisis asmática',
+escenario:'Escolar masculino de 7 años 4 meses, 24 kg (p50), talla 123 cm; dermatitis atópica y asma desde los 5 años tratada solo con salbutamol a demanda. Tras infección viral: agitado, frases entrecortadas, tiraje marcado y sibilancias. FC 138, FR 38, SatO₂ 90%, PEF 54% del mejor personal.',
+pregunta:'¿Cómo se clasifica y cuál es el manejo inicial en urgencias?',
+opciones:['Moderada a grave: O₂ para SatO₂ 94–98%, SABA con aerocámara cada 20 min por 1 h, ipratropio y prednisolona 1–2 mg/kg (máx. 40 mg)','Leve: 2 disparos de salbutamol y alta en 30 minutos','Grave: adrenalina SC 0.5 mg/kg y aminofilina IV de primera línea','Leve: azitromicina y nebulización hipertónica','Intubación inmediata sin intentar broncodilatadores'],
+justificacion:'GINA indica oxígeno, SABA con espaciador (tan eficaz como nebulizar), ipratropio en la primera hora de crisis moderadas-graves y corticoide sistémico temprano. Adrenalina SC, aminofilina o antibióticos no son primera línea.',
+referencia:'Global Initiative for Asthma (GINA). Global Strategy for Asthma Management and Prevention, 2024.'},
+{id:18,tema:'ped',subtema:'Invaginación intestinal',
+escenario:'Lactante masculino de 9 meses, 9 kg (p50), talla 72 cm; infección viral hace 5 días. 8 h de llanto cólico paroxístico con flexión de piernas, letargia intercalada, vómito biliar y evacuación en jalea de grosella. Masa en “salchicha” en hipocondrio derecho y fosa ilíaca derecha vacía. Ultrasonido: signo de la diana de 3.2 cm con Doppler conservado. FC 126, TA 90/56; sin peritonitis ni perforación.',
+pregunta:'¿Cuál es el tratamiento de primera línea?',
+opciones:['Reducción con enema neumático o hidrostático guiado por imagen, con cirugía pediátrica disponible','Laparotomía exploradora con resección ileocólica inmediata','Polietilenglicol por sonda nasogástrica','Observación en ayuno 48 horas esperando desinvaginación espontánea','Dexametasona IV en dosis altas como único tratamiento'],
+justificacion:'En paciente estable sin signos de perforación, el enema terapéutico logra 80–90% de éxito y evita la cirugía. La laparotomía se reserva para fracaso del enema, peritonitis, perforación o inestabilidad.',
+referencia:'Kelley-Quon LI, et al. Management of intussusception in children. J Pediatr Surg 2021;56:587-596.'},
+{id:19,tema:'nef',subtema:'Infección de vías urinarias',
+escenario:'Lactante masculino de 7 meses, no circuncidado, 8.2 kg (p50), talla 70 cm; vacunas completas. Fiebre de 39.5 °C por 36 h, irritabilidad y vómitos, sin foco. Muestra por cateterismo: esterasa +++, nitritos +, 48 leucocitos/campo y bacilos gramnegativos; urocultivo con E. coli >100,000 UFC/mL. Completó 10 días de cefalosporina oral con respuesta rápida.',
+pregunta:'Tras este primer episodio febril, ¿qué imagen es de rutina y cuál es el papel de la cistouretrografía miccional?',
+opciones:['Ultrasonido renal y vesical; CUGM solo si hay hidronefrosis, cicatrices, germen atípico o segunda IVU febril','DMSA y CUGM de rutina a todos los lactantes','Ninguna imagen hasta los 5 años','Urografía excretora y TC helicoidal','Profilaxis con amoxicilina 2 años antes de cualquier ultrasonido'],
+justificacion:'Las guías actuales abandonaron la CUGM rutinaria tras la primera IVU febril por su radiación e invasividad, y porque la profilaxis no previene cicatrices en reflujo de bajo grado. El ultrasonido descarta malformaciones u obstrucción.',
+referencia:'Mattoo TK, et al. Pediatrics 2021;147:e2020012138; NICE NG224, 2022.'},
+{id:20,tema:'inf',subtema:'Sarampión',
+escenario:'Preescolar masculino de 15 meses, 10.5 kg (p50), talla 79 cm; sin vacuna SRP por rechazo parental, regresó hace 10 días de zona con brote. 4 días de fiebre de 39.8 °C, tos, rinorrea, conjuntivitis con fotofobia, exantema maculopapular retroauricular descendente y manchas de Koplik. RT-PCR e IgM positivas; hiporexia y deshidratación leve.',
+pregunta:'¿Qué suplementación específica reduce la mortalidad y las complicaciones oculares?',
+opciones:['Vitamina A oral 200,000 UI al día por 2 días','Vitamina C IV 500 mg cada 12 h por 5 días','Vitamina D3 oral 50,000 UI en dosis única','Sulfato de zinc 20 mg cada 8 h por 14 días','Ribavirina aerosolizada por 72 horas'],
+justificacion:'El sarampión depleta la vitamina A hepática y daña los epitelios. OMS y AAP recomiendan dos dosis diarias consecutivas ajustadas por edad: 200,000 UI en ≥12 meses, 100,000 UI de 6 a 11 meses y 50,000 UI en <6 meses.',
+referencia:'AAP Red Book 2024–2027 (Measles); WHO Measles Clinical Management, 2023.'},
+{id:21,tema:'inf',subtema:'Meningitis bacteriana',
+escenario:'Lactante masculino de 10 meses, 9 kg (p50); esquema neumocócico incompleto (1 dosis). Fiebre de 39.7 °C por 24 h, vómitos, somnolencia y convulsión tónico-clónica de 3 min. Febril, letárgico, fontanela abombada, rigidez nucal, Kernig y Brudzinski positivos; estable, sin focalización. LCR turbio: 1,920 leucocitos (93% PMN), glucosa 12 mg/dL (sérica 96), proteínas 260 mg/dL, diplococos grampositivos lanceolados.',
+pregunta:'¿Cuál es el esquema empírico y la terapia adyuvante recomendada?',
+opciones:['Vancomicina más ceftriaxona en dosis meníngeas, con dexametasona 0.15 mg/kg cada 6 h por 2–4 días junto o antes del antibiótico','Ampicilina más gentamicina por 7 días sin corticoides','Ceftriaxona en monoterapia por 5 días','Meropenem más aciclovir por 21 días','Penicilina G cristalina sola más prednisona oral'],
+justificacion:'Ante S. pneumoniae con posible resistencia se agrega vancomicina hasta conocer la sensibilidad. La dexametasona temprana atenúa la inflamación por bacteriólisis y reduce secuelas neurológicas e hipoacusia.',
+referencia:'AAP Red Book 2024–2027 (Pneumococcal/Bacterial Meningitis); NICE NG240, 2024.'},
+{id:22,tema:'car',subtema:'Enfermedad de Kawasaki',
+escenario:'Preescolar masculino de 3 años 2 meses, 15 kg (p50), talla 96 cm; vacunas completas. Fiebre de 39.5–40.2 °C por 6 días, irritabilidad, inyección conjuntival bilateral sin exudado, labios agrietados, lengua en fresa, exantema polimorfo, edema indurado en manos y pies y adenopatía cervical de 2.1 cm. PCR 11.8 mg/dL, VSG 82, plaquetas 485,000, albúmina 2.8. ETT: coronarias normales y derrame pericárdico leve.',
+pregunta:'¿Cuál es el tratamiento inicial de primera línea?',
+opciones:['IGIV 2 g/kg (30 g) en 10–12 h más AAS a dosis moderada de 30–50 mg/kg/día','IGIV 400 mg/kg/día por 5 días más ibuprofeno','Prednisona 2 mg/kg/día en monoterapia por 14 días','Clopidogrel más enoxaparina','Infliximab en monoterapia sin IGIV'],
+justificacion:'La IGIV dentro de los primeros 10 días reduce los aneurismas coronarios de ~25% a <4%. La actualización AHA 2024 prefiere AAS a dosis moderada, con igual eficacia y menor toxicidad que las dosis altas; después se baja a 3–5 mg/kg/día.',
+referencia:'Jone PN, et al. AHA Scientific Statement on Kawasaki Disease. Circulation 2024;150:e481-e500.'},
+{id:23,tema:'gas',subtema:'Diarrea por E. coli productora de toxina Shiga',
+escenario:'Preescolar masculino de 4 años 1 mes, 16 kg (p50), talla 102 cm; vacunas completas. 3 días de dolor cólico, tenesmo y 9–10 evacuaciones mucosanguinolentas diarias, sin fiebre; comió carne molida poco cocida. Ligeramente deshidratado, sin irritación peritoneal. PCR en heces confirma E. coli productora de toxina Shiga tipo 2.',
+pregunta:'¿Cuál es la conducta correcta y qué fármacos están contraindicados?',
+opciones:['Evitar antibióticos y antimotilidad; expansión temprana de volumen con cristaloides isotónicos IV','Ciprofloxacino o TMP-SMX por 5 días','Loperamida para frenar la diarrea sanguinolenta','Metronidazol más ceftriaxona por 7 días','Corticoides sistémicos para la inflamación colónica'],
+justificacion:'Los antibióticos inducen la respuesta SOS y la lisis de bacteriófagos con liberación masiva de toxina, y junto con los antimotilidad aumentan el riesgo de síndrome urémico hemolítico. La hidratación IV isotónica temprana protege la perfusión renal.',
+referencia:'Tarr PI, Freedman SB. Gastroenterology 2022;162:358-365.'},
+{id:24,tema:'nlg',subtema:'Espasmos epilépticos infantiles',
+escenario:'Lactante masculino de 6 meses, 7.6 kg (p50), talla 67 cm; crisis neonatales controladas. 2 semanas de salvas de flexión de cuello, tronco y brazos al despertar, con regresión (perdió sonrisa social y sostén cefálico); máculas hipomelanóticas en hoja de fresno. Video-EEG con hipsarritmia; RM con túberes corticales y nódulos subependimarios calcificados (esclerosis tuberosa).',
+pregunta:'¿Cuál es el fármaco anticrisis de primera línea en este caso?',
+opciones:['Vigabatrina 50–150 mg/kg/día','Carbamazepina 15 mg/kg/día','Fenitoína IV con mantenimiento oral','Etosuximida 20 mg/kg/día','Gabapentina 30 mg/kg/día'],
+justificacion:'En espasmos infantiles de otra etiología la primera línea es ACTH o prednisolona en dosis altas, pero en esclerosis tuberosa la vigabatrina logra remisión en 75–90%. Su toxicidad retiniana obliga a vigilancia oftalmológica.',
+referencia:'Northrup H, et al. Updated International TSC Criteria and Management Recommendations. Pediatr Neurol 2021;123:50-66.'},
+{id:25,tema:'hem',subtema:'Anemia ferropénica',
+escenario:'Lactante masculino de 14 meses, 9.9 kg (p50), talla 77 cm; recibe 850 mL/día de leche de vaca no fortificada desde los 9 meses, con poca carne o cereal fortificado. Palidez de 6 semanas, irritabilidad e hiporexia. Hb 8.1 g/dL, VCM 62 fL, ADE 18.6%, plaquetas 510,000; ferritina 5.8 ng/mL, PCR negativa, saturación de transferrina 5%.',
+pregunta:'¿Cuál es el tratamiento de elección?',
+opciones:['Hierro elemental oral 3–6 mg/kg/día entre comidas con vitamina C, reducir la leche a <500 mL/día y dar alimentos ricos en hierro hemo','Transfusión de concentrado eritrocitario 15 mL/kg','Hierro dextrán IV 500 mg en dosis única','Ácido fólico 5 mg/día más vitamina B12 IM semanal','Multivitamínico en gotas con 5 mg de hierro por 2 semanas'],
+justificacion:'Es ferropenia nutricional por exceso de leche de vaca. La dosis se calcula con hierro elemental; el calcio y la caseína inhiben su absorción. La respuesta esperada es crisis reticulocitaria a los 5–10 días y se continúa 2–3 meses tras normalizar la Hb.',
+referencia:'WHO guideline on ferritin to assess iron status, 2020; Powers JM, UpToDate/Pediatrics 2022–2024.'},
+{id:26,tema:'ped',subtema:'Apendicitis aguda',
+escenario:'Escolar masculino de 9 años 6 meses, 30 kg (p50), talla 135 cm. Dolor periumbilical de 22 h migrado a fosa ilíaca derecha, anorexia y vómito; T 38.2 °C, defensa en McBurney, Blumberg y Rovsing positivos. Leucocitos 16,600 (84% neutrófilos), PCR 5.8 mg/dL. Ultrasonido: apéndice no compresible de 8.6 mm con apendicolito y líquido libre, sin absceso.',
+pregunta:'¿Cuál es el manejo definitivo?',
+opciones:['Hidratación IV, analgesia adecuada, antibiótico preoperatorio y apendicectomía laparoscópica','Manejo conservador con antibióticos orales sin cirugía','Retener analgésicos hasta entrar a quirófano para no enmascarar la exploración','Laparotomía media amplia y diferir antibióticos hasta después de la cirugía','Drenaje percutáneo y apendicectomía diferida 6 meses'],
+justificacion:'La analgesia temprana es segura y no retrasa el diagnóstico. El apendicolito eleva el fracaso del manejo no operatorio (40–50%) y la laparoscopia ofrece menos infección de herida y menor estancia.',
+referencia:'Di Saverio S, et al. WSES Jerusalem guidelines 2020 update. World J Emerg Surg 2020;15:27.'},
+{id:27,tema:'end',subtema:'Talla baja',
+escenario:'Escolar masculino de 9 años 3 meses, talla 118.5 cm (<p3, −2.4 DE), 23.5 kg (p15); nació a término sin complicaciones. Padre 170 cm con estirón a los 15–16 años, madre 158 cm (talla blanco 170.5 cm). Velocidad de crecimiento 5.3 cm/año, Tanner 1, armónico. Edad ósea de 7 años; TSH, T4L, IGF-1, serología celíaca y química normales.',
+pregunta:'¿Cuál es el diagnóstico definitivo?',
+opciones:['Retraso constitucional del crecimiento y de la pubertad','Talla baja familiar','Deficiencia aislada de hormona de crecimiento','Hipotiroidismo adquirido','Hipocondroplasia'],
+justificacion:'Velocidad normal paralela al p3, edad ósea retrasada, antecedente paterno de pubertad tardía y estudios normales definen el RCCP, con talla adulta proyectada normal. Basta tranquilizar y seguir velocidad y desarrollo puberal.',
+referencia:'Polidori N, et al. Deciphering short stature in children. Ann Pediatr Endocrinol Metab 2020;25:69-79.'},
+{id:28,tema:'gas',subtema:'Enfermedad celíaca',
+escenario:'Preescolar femenina de 2 años 6 meses, 10.2 kg (Z −2.2), talla 84 cm (p5). 4 meses de diarrea pálida, fétida y flotante, distensión abdominal y detención ponderal desde que come trigo; atrofia glútea. tTG-IgA 240 U/mL (12 veces el límite superior) con IgA total normal. La madre pregunta si necesita endoscopia con biopsias.',
+pregunta:'Según ESPGHAN 2020, ¿cómo se confirma el diagnóstico sin biopsia?',
+opciones:['EMA-IgA positivo en una segunda muestra de sangre, con tTG-IgA ≥10 veces el límite superior','Una sola tTG-IgA mayor de 5 veces el límite superior','Biopsia duodenal obligatoria en todos los niños','Provocación con 15 g de gluten por 6 semanas','Biopsia cutánea para inmunofluorescencia directa'],
+justificacion:'El algoritmo sin biopsia exige tTG-IgA ≥10 veces el límite superior más EMA-IgA positivo en una segunda extracción, con VPP >99%; ya no se requiere tipificar HLA. Debe mantenerse el gluten en la dieta hasta confirmar.',
+referencia:'Husby S, et al. ESPGHAN Guidelines for Diagnosing Coeliac Disease 2020. JPGN 2020;70:141-156.'},
+{id:40,tema:'ped',subtema:'Fiebre sin foco en lactante menor de 3 meses',
+escenario:'Lactante femenino de 2 meses, 5.2 kg (p50), 58 cm (p50); vacunas al día. Fiebre 38.5 °C de 6 h sin foco, buen estado general, fontanela normotensa, sin signos meníngeos. Urocultivo por cateterismo: 15 leucocitos/campo, nitritos negativos, esterasa traza. Madre refiere buen apetito.',
+pregunta:'¿Cuál es la conducta más apropiada?',
+opciones:['Hospitalizar, hemocultivo, urocultivo, punción lumbar y antibiótico empírico IV (ampicilina + gentamicina o cefotaxima)','Alta con antipirético y control en 24 h','Solo urocultivo y esperar resultado en domicilio','Amoxicilina oral ambulatoria por 7 días','Observación 4 h y repetir exploración sin estudios'],
+justificacion:'En menores de 3 meses con fiebre ≥38 °C sin foco, las guías AAP y NICE indican estudio completo (sangre, orina y LCR) y antibiótico empírico IV por alto riesgo de infección bacteriana grave, incluso con buen estado general. Diferir el antibiótico o el alta aumenta mortalidad.',
+referencia:'AAP Clinical Practice Guideline: Evaluation and Management of Well-Appearing Febrile Infants 8 to 60 Days Old. Pediatrics 2021;148:e2021052228.'},
+
+{id:41,tema:'ped',subtema:'Otitis media aguda',
+escenario:'Preescolar masculino de 2 años 3 meses, 12 kg (p50). Cuadro catarral de 3 días, hoy otalgia derecha intensa y fiebre 38.9 °C. Oído derecho: abombamiento timpánico marcado, eritema intenso y otorrea purulenta. Oído izquierdo normal. Buen estado general, tolera la vía oral.',
+pregunta:'¿Cuál es el esquema antibiótico de primera línea?',
+opciones:['Amoxicilina 80–90 mg/kg/día en dos dosis por 10 días','Amoxicilina 40 mg/kg/día por 5 días','Azitromicina 10 mg/kg/día por 3 días','Cefalexina 50 mg/kg/día por 7 días','Solo analgesia sin antibiótico'],
+justificacion:'OMA con otorrea y síntomas moderados-graves exige antibiótico. En menores de 2 años con síntomas graves, amoxicilina a dosis altas cubre S. pneumoniae resistente y H. influenzae durante 10 días. Los macrólidos no son primera línea por alta resistencia neumocócica.',
+referencia:'Venekamp RP, et al. Antibiotics for acute otitis media in children. Cochrane Database Syst Rev 2023;11:CD000219; AAP CPG OMA (vigente).'},
+
+{id:42,tema:'neo',subtema:'Sepsis neonatal temprana',
+escenario:'RN masculino de 12 h de vida, 38 SDG, 3.2 kg (p50). Madre con fiebre intraparto 38.5 °C, RPM de 20 h, sin profilaxis antibiótica. RN con quejido, taquipnea 74 rpm, hipotonía, T 38.3 °C, FC 178 lpm, llenado capilar 4 s, SatO₂ 92% al aire.',
+pregunta:'¿Cuál es la conducta inmediata?',
+opciones:['Hemocultivo, biometría, PCR y antibiótico empírico IV inmediato (ampicilina + gentamicina)','Observar 6 h antes de iniciar antibiótico','Solo hemocultivo y esperar resultado','Ampicilina oral empírica','Solo líquidos IV y control térmico'],
+justificacion:'Fiebre materna, RPM >18 h sin profilaxis y clínica neonatal indican sepsis temprana probable. El antibiótico empírico no debe retrasarse por esperar cultivos. Ampicilina + gentamicina cubre Streptococcus agalactiae y E. coli, los patógenos predominantes.',
+referencia:'Puopolo KM, et al. Management of Neonates Born at ≥35 Weeks with Suspected Early-Onset Sepsis. Pediatrics 2018 (vigente 2023); NRP 8th ed., 2021.'},
+
+{id:43,tema:'inf',subtema:'Varicela en adolescente',
+escenario:'Adolescente masculino de 13 años, 48 kg (p50). Sin vacuna de varicela ni antecedente de la enfermedad. 3 días con exantema pruriginoso generalizado en distintos estadios (máculas, pápulas, vesículas, costras), fiebre 38.8 °C, cefalea y lesiones mucosas oral y conjuntival.',
+pregunta:'¿Cuál es el tratamiento indicado?',
+opciones:['Aciclovir oral 20 mg/kg/dosis (máx 800 mg) cada 6 h por 7 días','Amoxicilina profiláctica para sobreinfección','Ibuprofeno para la fiebre como primera elección','Corticoide sistémico para el exantema','Observación sin tratamiento antiviral'],
+justificacion:'En mayores de 12 años el aciclovir reduce la duración y complicaciones de la varicela. Debe evitarse el ácido acetilsalicílico por riesgo de síndrome de Reye. Los corticoides están contraindicados por riesgo de diseminación viral y sobreinfección.',
+referencia:'AAP Red Book 2024–2027 (Varicella); CDC Varicella Treatment Guidelines, 2023.'},
+
+{id:44,tema:'inf',subtema:'Exantema súbito (roseola infantum)',
+escenario:'Lactante femenino de 11 meses, 9.5 kg (p50). Tres días de fiebre 39.5 °C sin foco, buen estado general. Hoy afebril y aparece exantema maculopapular rosado tenue que inicia en tronco y se disemina a cuello y extremidades. Sin adenopatías, sin enantema.',
+pregunta:'¿Cuál es el diagnóstico y manejo más apropiados?',
+opciones:['Exantema súbito por VHH-6; manejo sintomático sin antibiótico','Sarampión; aislamiento y notificación epidemiológica','Rubéola; notificación inmediata y bloqueo vacunal','Escarlatina; penicilina benzatínica IM','Fiebre manchada; doxiciclina por 5 días'],
+justificacion:'Fiebre alta que cede y aparece exantema al desfervescer es la presentación clásica del exantema súbito por VHH-6. Es autolimitado y no requiere antibiótico. El sarampión cursa con fiebre persistente, Koplik y exantema descendente con conjuntivitis.',
+referencia:'AAP Red Book 2024–2027; Stone RC, et al. Roseola Infantum. StatPearls 2023.'},
+
+{id:45,tema:'tox',subtema:'Intoxicación por paracetamol',
+escenario:'Preescolar masculino de 3 años, 15 kg (p50). Hace 4 h ingirió accidentalmente ~6 g de paracetamol (400 mg/kg) del frasco familiar. Asintomático, hepatomegalia leve dolorosa, resto normal. Transaminasas aún normales. Nivel sérico de paracetamol 180 µg/mL a las 4 h.',
+pregunta:'¿Cuál es el tratamiento de elección?',
+opciones:['Carbón activado si <4 h de la ingesta + N-acetilcisteína IV (150 mg/kg de carga, 50 mg/kg en 4 h, 100 mg/kg en 16 h)','Solo observación 24 h con control de transaminasas','Inducir vómito con jarabe de ipecacuana','Hemodiálisis inmediata','Bicarbonato de sodio IV para alcalinizar la orina'],
+justificacion:'Dosis >150 mg/kg son potencialmente hepatotóxicas por acumulación de NAPQI. La N-acetilcisteína repone el glutatión hepático y es más eficaz si se inicia antes de 8–10 h. El carbón activado es útil en las primeras 1–4 h si no hay contraindicación.',
+referencia:'Dart RC, et al. American College of Medical Toxicology Position Statement. J Med Toxicol 2021; Lavonas EJ, et al. AHA Circulation 2023;148:e149.'},
+
+{id:46,tema:'ped',subtema:'Cuerpo extraño esofágico',
+escenario:'Preescolar masculino de 2 años 1 mes, 12 kg (p50). Ingesta de moneda hace 1 h. Sialorrea, disfagia, vómitos, no puede deglutir saliva. Radiografía de tórax lateral: moneda en esófago proximal (nivel C6-T1). Buen estado general, sin dificultad respiratoria.',
+pregunta:'¿Cuál es el manejo apropiado?',
+opciones:['Endoscopia digestiva alta urgente (antes de 6 h) para extracción','Esperar 24 h y repetir radiografía para verificar paso espontáneo','Inducir vómito con jarabe de ipecacuana','Administrar pan y agua para empujar el objeto','Solo observación en domicilio con control en 48 h'],
+justificacion:'Cuerpo extraño esofágico impactado (especialmente moneda) requiere extracción endoscópica urgente por riesgo de perforación, necrosis por presión y fístula. Nunca debe inducirse el vómito ni intentarse empujarlo con alimentos por riesgo de perforación.',
+referencia:'Kramer RE, et al. NASPGHAN Guideline on Ingested Foreign Bodies. JPGN 2020;70:135-148 (vigente 2023).'},
+
+{id:47,tema:'car',subtema:'Soplo cardíaco inocente',
+escenario:'Escolar femenino de 6 años, 20 kg (p50), asintomática. Soplo sistólico de eyección grado II/VI en foco pulmonar, sin irradiación, S2 normal, sin clics, sin cianosis, pulsos periféricos simétricos. Crecimiento y desarrollo normales. Sin antecedentes familiares de cardiopatía.',
+pregunta:'¿Cuál es la conducta más apropiada?',
+opciones:['Soplo inocente; no requiere estudios adicionales, solo control anual','Ecocardiograma urgente para descartar cardiopatía','Cateterismo cardíaco diagnóstico','Profilaxis antibiótica pre-procedimiento','Restricción de la actividad física'],
+justificacion:'Soplo sistólico suave, sin irradiación, con S2 normal, asintomático y con crecimiento normal es característico del soplo inocente. La declaración AHA confirma que no requiere ecocardiograma, profilaxis ni restricción de actividad.',
+referencia:'Frank JE, et al. AHA Scientific Statement: Innocent Heart Murmurs in Children. Circulation 2020;141:e884-e903.'},
+
+{id:48,tema:'car',subtema:'Insuficiencia cardíaca pediátrica por CIV',
+escenario:'Lactante femenino de 3 meses, 4 kg (p10). CIV perimembranosa grande conocida. Taquipnea 68 rpm, sudoración con las tomas, rechazo alimentario (ingesta 60%), hepatomegalia 3 cm, ritmo de galope, SatO₂ 96%. Peso estacionado desde el mes de edad.',
+pregunta:'¿Cuál es el tratamiento inicial de la insuficiencia cardíaca?',
+opciones:['Furosemida 1–2 mg/kg/dosis + espironolactona + IECA (captopril) + aporte calórico alto','Digoxina como primera línea en monoterapia','Propranolol en monoterapia','Solo diurético sin IECA','Indometacina para cierre del conducto'],
+justificacion:'La ICC por cortocircuito izquierda-derecha (CIV) se maneja con diuréticos, IECA y soporte nutricional hipercalórico. La digoxina es adyuvante, no primera línea. Indometacina cierra el conducto arterioso (no aplica). El manejo debe ser multidisciplinario hasta la cirugía correctiva.',
+referencia:'Rosenthal DN, et al. ISHLT Guidelines for Pediatric Heart Failure. J Heart Lung Transplant 2023;42:1315-1396.'},
+
+{id:49,tema:'end',subtema:'Cetoacidosis diabética',
+escenario:'Escolar femenino de 10 años, 30 kg (p50). Tres semanas de poliuria, polidipsia y pérdida ponderal 4 kg. 24 h de vómitos, dolor abdominal, respiración de Kussmaul, aliento cetónico, deshidratación moderada. Glucosa 480 mg/dL, pH 7.12, HCO₃ 8, cetonas +++, Na 132, K 5.2.',
+pregunta:'¿Cuál es el manejo inicial correcto?',
+opciones:['Solución salina 0.9% 10–20 mL/kg en 1 h, luego insulina regular IV 0.05–0.1 U/kg/h tras iniciar líquidos + monitorizar potasio','Insulina IV en bolo 0.1 U/kg antes de cualquier líquido','Bicarbonato IV para corregir el pH a >7.3','Insulina subcutánea cada 6 h','Líquidos hipotónicos inmediatos sin insulina'],
+justificacion:'La rehidratación con cristaloides isotónicos es el primer paso; la insulina se inicia tras 1 h de líquidos. Evitar bolo de insulina por riesgo de edema cerebral. El bicarbonato solo se usa si pH <6.9. Vigilar potasio (puede caer con la insulina).',
+referencia:'ISPAD Clinical Practice Consensus Guidelines 2022. Pediatr Diabetes 2022;23:835-856.'},
+
+{id:50,tema:'end',subtema:'Hipotiroidismo congénito',
+escenario:'RN femenino de 15 días, 3.1 kg (p50). Tamiz neonatal con TSH 85 mUI/L (normal <20) y T4L baja. Estreñimiento, ictericia prolongada, llanto ronco, fontanela amplia, macroglosia leve. Madre sin patología tiroidea.',
+pregunta:'¿Cuál es la conducta inmediata?',
+opciones:['Iniciar levotiroxina 10–15 mcg/kg/día de inmediato y solicitar T4L, TSH y gammagrafía tiroidea para confirmar etiología','Repetir TSH en 2 semanas antes de cualquier tratamiento','Solo seguimiento clínico hasta los 3 meses','Iniciar yodo radiactivo','Iniciar propiltiouracilo'],
+justificacion:'El hipotiroidismo congénito requiere tratamiento inmediato para evitar daño neurológico irreversible. La levotiroxina se inicia ante tamiz positivo con clínica, sin esperar la confirmación, a 10–15 mcg/kg/día ajustada según T4L y TSH.',
+referencia:'van Trotsenburg P, et al. Congenital Hypothyroidism: European Society for Paediatric Endocrinology Consensus Guideline Update. Eur Thyroid J 2021;10:1-30.'},
+
+{id:51,tema:'inf',subtema:'Dengue con signos de alarma',
+escenario:'Escolar masculino de 8 años, 25 kg (p50). Cinco días de fiebre, cefalea, mialgias y exantema. Hoy cede la fiebre pero aparece dolor abdominal intenso, vómitos persistentes, lipotimia. Plaquetas 45,000, Hto 48% (basal 40%), derrame pleural leve, IgM dengue positiva. Signos de choque incipiente.',
+pregunta:'¿Cuál es el manejo apropiado?',
+opciones:['Hospitalizar, cristaloides isotónicos 5–10 mL/kg/h, monitorizar signos de choque y evitar AINEs/AAS','AAS para la fiebre y control ambulatorio','Ibuprofeno como antipirético de primera línea','Alta con paracetamol y control en 48 h','Transfusión profiláctica de plaquetas'],
+justificacion:'Fase crítica del dengue con signos de alarma (dolor abdominal, vómitos, hemoconcentración, plaquetopenia): extravasación capilar que requiere hospitalización y cristaloides isotónicos titulados. AINEs y AAS están contraindicados por riesgo de sangrado. Plaquetas solo si sangrado grave.',
+referencia:'WHO. Dengue: Guidelines for Diagnosis, Treatment, Prevention and Control, 2023 update; PAHO/OMS Dengue 2023.'},
+
+{id:52,tema:'nlg',subtema:'Convulsión febril simple',
+escenario:'Lactante masculino de 18 meses, 11 kg (p50). Fiebre 39 °C de 2 h. Convulsión tónico-clónica generalizada de 3 min autolimitada. Postictal somnoliento 15 min, luego completamente normal. Sin antecedentes de epilepsia, sin signos meníngeos, desarrollo psicomotor normal.',
+pregunta:'¿Cuál es el manejo más apropiado?',
+opciones:['Es convulsión febril simple; educación a los padres, antitérmicos y seguimiento ambulatorio sin antiepilépticos ni estudios de rutina','Iniciar ácido valproico profiláctico','Punción lumbar obligatoria en todos los casos','EEG urgente antes del alta','Ingreso a unidad de cuidados intensivos'],
+justificacion:'La convulsión febril simple (3–15 min, generalizada, una en 24 h, sin focalización, con desarrollo normal) tiene excelente pronóstico. No requiere antiepilépticos ni estudios de rutina. La educación sobre manejo de la fiebre y signos de alarma es la intervención clave.',
+referencia:'NICE CG160. Febrile Seizures: Assessment and Initial Management. Updated 2021; Subcommittee on Febrile Seizures, AAP. Pediatrics 2011 (vigente).'}, {id:53,tema:'ped',subtema:'Diarrea aguda: Plan A (sin deshidratación)',
+escenario:'Lactante masculino de 9 meses, 8.8 kg (p50), talla 72 cm (p50); vacunas completas, seno materno + alimentación complementaria. 18 h de 4 evacuaciones líquidas amarillentas sin moco ni sangre, un vómito postprandial y febrícula 37.8 °C. Alerta, activo, sonriente; ojos normales, lágrimas presentes, mucosa húmeda, bebe normal sin avidez, pliegue cutáneo inmediato (<1 s), llenado capilar 1.5 s. FC 124, FR 28, T 37.6 °C.',
+pregunta:'Según criterios OMS/ESPGHAN, ¿cómo se clasifica la hidratación y cuál es el volumen exacto de SRO de osmolaridad reducida tras cada evacuación (Plan A)?',
+opciones:['Sin deshidratación (Plan A): mantener lactancia materna a libre demanda y ofrecer 50–100 mL (¼–½ taza) de SRO tras cada evacuación líquida en <2 años, en cucharaditas o sorbos pequeños','Deshidratación leve; administrar 500 mL de SRO cada 4 h por sonda nasogástrica','Sin deshidratación; administrar 200 mL de bebidas deportivas comerciales tras cada evacuación','Deshidratación moderada; bolo IV de solución salina 0.9% a 20 mL/kg','Sin deshidratación; suspender seno materno 24 h y ofrecer solo té de manzanilla sin azúcar'],
+justificacion:'OMS Plan A: SRO de osmolaridad reducida (245 mOsm/L) a 50–100 mL tras cada evacuación en <2 años (100–200 mL en ≥2 años). Las bebidas deportivas y tés no tienen la proporción equimolar sodio-glucosa que activa SGLT1.',
+referencia:'WHO. Diarrhoea Treatment Guidelines / Pocket Book of Hospital Care for Children (vigente 2021-2024); Florez ID, et al. JAMA Netw Open 2020;3:e2024886.'},
+
+{id:54,tema:'ped',subtema:'Diarrea aguda: dieta y zinc en Plan A',
+escenario:'El lactante de 9 meses con diarrea sin deshidratación (Plan A) mejora con SRO. La madre pregunta si debe suspender sólidos y dar "dieta astringente de arroz y manzana", y si debe agregar algún suplemento.',
+pregunta:'¿Qué recomendaciones nutricionales y farmacológicas basadas en OMS/ESPGHAN completan el Plan A?',
+opciones:['Continuar alimentación habitual apropiada sin restricciones ni diluciones (seno frecuente + alimentos nutritivos, sin bebidas azucaradas) y dar zinc elemental 20 mg/día por 10–14 días','Ayuno de sólidos 48 h e iniciar caolín-pectina cada 6 h','Cambiar a fórmula hidrolizada extensa e iniciar loperamida oral','Zinc 5 mg/día por 3 días y suspender frutas/verduras por 2 semanas','TMP-SMX profiláctico por 5 días para evitar sobreinfección'],
+justificacion:'OMS indica zinc elemental (10 mg/día <6 meses, 20 mg/día ≥6 meses por 10–14 días): acorta duración, reduce gravedad y previene nuevos episodios 2–3 meses. Adsorbentes y antimotilidad están contraindicados.',
+referencia:'WHO. Diarrhoea Treatment Guidelines (vigente 2021-2024); Florez ID, et al. JAMA Netw Open 2020;3:e2024886.'},
+
+{id:55,tema:'ped',subtema:'Diarrea aguda: signos de alarma al alta',
+escenario:'Antes de retirarse, la madre del lactante de 9 meses con Plan A pide orientación sobre cuándo regresar a urgencias.',
+pregunta:'¿Cuál conjunto representa los signos de alarma obligatorios que deben enseñarse dentro del Plan A?',
+opciones:['Evacuaciones muy frecuentes o abundantes, vómitos repetidos que impiden la ingesta, sed intensa, incapacidad para beber o lactar, fiebre alta persistente, sangre en heces, o deterioro del estado general (irritabilidad marcada o letargia)','Tres evacuaciones pastosas al día con apetito conservado','Coloración amarillenta de las heces y borborigmos audibles','Disminución de 4 a 2 evacuaciones por día','Fiebre de 37.7 °C que cede con medios físicos'],
+justificacion:'La educación estructurada sobre signos de alarma es el cuarto pilar del Plan A para prevenir progresión tardía a choque hipovolémico.',
+referencia:'WHO. Diarrhoea Treatment Guidelines (vigente 2021-2024).'},
+
+{id:56,tema:'ped',subtema:'Diarrea aguda: Plan B (deshidratación moderada)',
+escenario:'Preescolar femenino de 2 años 1 mes, 12 kg (p50), talla 87 cm (p50); vacunas completas. 30 h de 7 evacuaciones líquidas abundantes sin sangre y 5 vómitos. Inquieta, irritable; ojos hundidos, mucosa seca, llanto sin lágrimas, bebe con avidez, pliegue cutáneo lento (1.5 s), llenado capilar 2 s. FC 136, FR 30, TA 90/56, T 37.9 °C.',
+pregunta:'Con 2 o más signos de deshidratación moderada sin choque, ¿cuál es el volumen y tiempo exactos del Plan B con SRO de osmolaridad reducida?',
+opciones:['600–1,200 mL (50–100 mL/kg) en 4 h en área de hidratación oral, en tomas pequeñas frecuentes (5–10 mL cada 5 min), reevaluando al término','120–240 mL en 30 min','2,400 mL en 2 h por vía IV periférica','300 mL en 12 h mezclados con jugo de manzana','1,200 mL en bolo único de 15 min'],
+justificacion:'Plan B OMS/ESPGHAN: 50–100 mL/kg de SRO hipoosmolar en 4 h (75 mL/kg = 900 mL como referencia práctica), más reposición de pérdidas continuas, con reevaluación clínica al final.',
+referencia:'WHO. Diarrhoea Treatment Guidelines (vigente 2021-2024); NICE CG84 (vigente 2020-2024).'},
+
+{id:57,tema:'ped',subtema:'Diarrea aguda: fracaso de vía oral, sonda nasogástrica',
+escenario:'La paciente de 12 kg con deshidratación moderada recibió ondansetrón VO 1.8 mg; aun así vomita todo lo ingerido durante 1 h y se niega a beber. Persiste deshidratación moderada sin choque (alerta, TA 90/54, llenado 2 s). Sin íleo, sin abdomen agudo.',
+pregunta:'Ante el fracaso de la vía oral sin choque, ¿cuál es la alternativa de rehidratación preferida antes de la vía IV?',
+opciones:['Sonda nasogástrica con SRO de osmolaridad reducida por gastroclisis continua o intermitente a 20 mL/kg/h (240 mL/h) por 4–6 h, o iniciar IV isotónica si no hay SNG o persisten vómitos','Insistir forzando 200 mL por boca cada 10 min','Metoclopramida IV cada 4 h y esperar en ayuno','Venodisección quirúrgica para solución glucosada 5% sin electrolitos','Alta domiciliaria con supositorios de dimenhidrinato'],
+justificacion:'La rehidratación enteral por SNG con SRO a 20 mL/kg/h tiene eficacia equiparable a la IV en deshidratación moderada, con menor flebitis y estancia hospitalaria.',
+referencia:'WHO Guideline on fluid management of acutely ill children, 2024; ESPGHAN/ESPID Evidence-Based Guidelines for Acute Gastroenteritis (vigente 2020-2024).'},
+
+{id:58,tema:'ped',subtema:'Diarrea aguda: transición Plan B → Plan A',
+escenario:'Tras gastroclisis con SRO a 240 mL/h por 4 h (960 mL totales), la paciente de 12 kg tolera sin vómitos, recupera humedad de mucosas, normaliza el pliegue y presenta micción clara abundante.',
+pregunta:'Al término de las 4 h del Plan B y sin signos de deshidratación, ¿qué plan debe indicarse?',
+opciones:['Reclasificar como "sin deshidratación" y pasar a Plan A (SRO tras cada evacuación, alimentación habitual inmediata, zinc oral 10–14 días)','Iniciar segundo ciclo de Plan B por 4 h adicionales de rutina','Mantener la SNG en casa 72 h','Hospitalizar 48 h con salino IV de mantenimiento','Dieta líquida clara exclusiva por 3 días'],
+justificacion:'El algoritmo OMS exige reevaluar a las 4 h: sin signos → Plan A; deshidratación moderada persistente → repetir Plan B; deshidratación grave → Plan C.',
+referencia:'WHO. Diarrhoea Treatment Guidelines (vigente 2021-2024).'},
+
+{id:59,tema:'ped',subtema:'Diarrea aguda: Plan C en <12 meses',
+escenario:'Lactante masculino de 8 meses, 8.0 kg (p25), talla 70 cm (p50); sin vacuna de rotavirus. 36 h de evacuaciones en agua de arroz (>15) y vómitos incoercibles. Letárgico, difícil de despertar; ojos hundidos, incapaz de beber, pliegue >2 s, extremidades frías y marmóreas, pulsos débiles, llenado capilar 4 s. FC 178, FR 48 (acidótica), TA 62/34, T 36.4 °C.',
+pregunta:'Con deshidratación grave y choque en <12 meses, ¿cuál es el esquema estricto del Plan C de la OMS?',
+opciones:['100 mL/kg (800 mL) de cristaloide isotónico (Ringer lactato o salino 0.9%) en 6 h: 30 mL/kg (240 mL) en 1 h (repetir una vez si el pulso radial sigue débil) + 70 mL/kg (560 mL) en 5 h','100 mL/kg en 3 h (30 mL/kg en 30 min + 70 mL/kg en 2.5 h) — esquema exclusivo para ≥12 meses','Solución glucosada 5% con 20 mEq/L de Na a 100 mL/kg en 24 h','10 mL/kg de salino 0.9% en 4 h y esperar respuesta','Albúmina humana 5% a 20 mL/kg en 2 h'],
+justificacion:'Plan C OMS: 100 mL/kg siempre; velocidad por edad: <12 meses = 30 mL/kg en 1 h + 70 mL/kg en 5 h (6 h totales); ≥12 meses = 30 min + 2.5 h (3 h). Soluciones glucosadas hipotónicas están contraindicadas por riesgo de hiponatremia y edema cerebral.',
+referencia:'WHO. Pocket Book of Hospital Care for Children / Diarrhoea Treatment Guidelines (Plan C, vigente 2021-2024); WHO Guideline on fluid management of acutely ill children, 2024.'},
+
+{id:60,tema:'ped',subtema:'Diarrea aguda: inicio de SRO durante Plan C',
+escenario:'El lactante de 8 meses con choque hipovolémico recibió 240 mL de Ringer lactato en la primera hora: pulso radial fuerte, TA 84/50, llenado capilar 2 s, comienza a responder. Se inicia segunda fase de 70 mL/kg (560 mL) en 5 h.',
+pregunta:'¿En qué momento de las 6 h del Plan C debe iniciarse SRO a 5 mL/kg/h (40 mL/h)?',
+opciones:['Tan pronto el lactante esté consciente, alerta y capaz de beber sin riesgo de broncoaspiración (habitualmente 3–4 h tras iniciar IV en <12 meses), para aportar K y citrato y facilitar la transición oral','Nunca antes de 24 h de retirar la vía IV','Desde el minuto cero mientras aún está letárgico','Únicamente después de que desaparezca por completo la diarrea','Sustituyendo el Ringer lactato por agua simple desde la segunda hora'],
+justificacion:'Salino 0.9% y Ringer lactato son pobres en K y base; la SRO (20 mEq/L K, 10 mmol/L citrato) corrige mejor acidosis e hipopotasemia cuando el niño puede beber.',
+referencia:'WHO. Diarrhoea Treatment Guidelines (Plan C, vigente 2021-2024).'},
+
+{id:61,tema:'ped',subtema:'Diarrea aguda: al completar Plan C',
+escenario:'Al cumplir 6 h de terapia IV, el lactante de 8 meses está despierto, hidratado, mucosas húmedas, pliegue normal y micción presente.',
+pregunta:'¿Qué conducta debe seguirse al completar las 6 h del Plan C?',
+opciones:['Reevaluar integralmente: si no hay deshidratación, suspender IV, observar al menos 6 h tolerando SRO y seno materno, y egresar bajo Plan A con zinc oral (o repetir Plan B/C según hallazgos)','Suspender toda hidratación y alta inmediata sin seguimiento','Mantener Ringer lactato a 100 mL/kg cada 6 h por 48 h','Loperamida oral antes de retirar el catéter','Bolo adicional de glucosada 10% 30 mL/kg'],
+justificacion:'La observación ≥6 h post-IV confirma que el cuidador puede mantener el equilibrio hídrico oral frente a pérdidas fecales persistentes.',
+referencia:'WHO. Pocket Book of Hospital Care for Children (vigente 2021-2024).'},
+
+{id:62,tema:'inf',subtema:'Cólera: Plan C en ≥12 meses',
+escenario:'Escolar masculino de 6 años 4 meses, 20 kg (p50), talla 117 cm (p50); sano. Regresó de zona rural inundada. 14 h de diarrea acuosa explosiva, indolora, masiva (>15 mL/kg/h, "agua de arroz" con moco, olor a pescado), sin fiebre, con vómitos y calambres en pantorrillas. Obnubilado, ojos muy hundidos, pliegue >2 s, pulso radial muy débil, FC 158, TA 74/42, llenado capilar 4 s.',
+pregunta:'Con deshidratación grave por diarrea secretora (sospecha Vibrio cholerae O1/O139) en ≥12 meses, ¿cuál es el esquema del Plan C y la solución de elección?',
+opciones:['Ringer lactato (Hartmann) 100 mL/kg (2,000 mL) en 3 h: 30 mL/kg (600 mL) en 30 min (repetir si pulso débil) + 70 mL/kg (1,400 mL) en 2.5 h, vigilando pérdidas fecales masivas para reposición adicional volumen a volumen','100 mL/kg en 6 h (1 h + 5 h) con glucosada 5%','50 mL/kg de salino 0.45% en 12 h','Solo SRO por SNG sin acceso venoso','20 mL/kg de coloide sintético y restringir líquidos 8 h'],
+justificacion:'En cólera grave, la toxina activa adenilato ciclasa y CFTR con pérdidas >10–20 mL/kg/h. Ringer lactato es preferible al salino 0.9% porque aporta lactato (corrige acidosis) y potasio.',
+referencia:'WHO. Cholera Outbreak Response Field Manual / Clinical Management of Cholera (2020-2024); AAP Red Book 2024–2027.'},
+
+{id:63,tema:'inf',subtema:'Cólera: antibiótico de elección',
+escenario:'El escolar de 6 años (20 kg) con cólera completó carga rápida y se encuentra consciente (TA 98/60). Electrolitos: Na 136, K 2.6, Cl 104, HCO₃ 11, glucosa 78; prueba rápida en heces positiva para Vibrio cholerae O1.',
+pregunta:'A diferencia de otras GEA, en el cólera grave la OMS y AAP indican antibiótico efectivo tan pronto cedan los vómitos. ¿Cuál es de primera elección?',
+opciones:['Azitromicina oral en dosis única 20 mg/kg (400 mg, máx 1 g); alternativa doxiciclina 2–4 mg/kg en dosis única, máx 300 mg (segura en dosis única independientemente de la edad según AAP)','Amoxicilina oral 40 mg/kg/día por 7 días','Metronidazol oral 30 mg/kg/día por 5 días','Cefalexina oral 50 mg/kg/día por 10 días','Vancomicina oral 10 mg/kg cada 6 h por 10 días'],
+justificacion:'AAP Red Book y OMS: azitromicina dosis única (o doxiciclina dosis única) reduce ~50% del volumen de líquidos requerido, acorta diarrea y frena excreción bacteriana.',
+referencia:'AAP Red Book 2024–2027 (Cholera); WHO Clinical Management of Cholera 2020-2024.'},
+
+{id:64,tema:'inf',subtema:'Cólera: hipopotasemia en recuperación',
+escenario:'El escolar de 6 años con cólera, tras cargas de Ringer lactato, corrige la acidosis y la hipovolemia. Electrolitos iniciales con K 2.6 mEq/L.',
+pregunta:'¿Qué trastorno electrolítico es especialmente peligroso durante la recuperación de la acidosis y cómo se previene/corrige?',
+opciones:['Hipopotasemia grave (por pérdidas fecales 15–40 mEq/L y entrada intracelular de K al corregir la acidosis); se previene/corrige con SRO temprana (20 mEq/L de K) y suplementación (KCl 20–40 mEq/L IV una vez asegurada la diuresis o alimentos ricos en K)','Hipercalcemia maligna; calcitonina SC','Hipermagnesemia sintomática; gluconato de calcio IV','Hipernatremia grave; agua destilada IV','Hipofosfatemia severa; insulina regular en infusión'],
+justificacion:'En cólera pediátrico, la hipopotasemia es la causa principal de íleo paralítico, debilidad respiratoria y arritmias si no se repone al restablecer la diuresis.',
+referencia:'WHO. Clinical Management of Cholera / Pocket Book of Hospital Care for Children (vigente 2020-2024).'},
+
+{id:65,tema:'nef',subtema:'Deshidratación hipernatrémica: bolus inicial',
+escenario:'Lactante masculino de 5 meses, 7.2 kg habitual (6.4 kg actual, pérdida 11%), talla 65 cm (p50). 3 días de diarrea. Abuela preparó SRO en 250 mL en vez de 1,000 mL (4× hiperosmolar) y fórmula concentrada. Piel "aterciopelada", mucosa "papel de lija", sed intensa, irritabilidad alternada con letargia, hiperreflexia. FC 164, FR 38, TA 76/46, llenado 3.5 s. Na 164, K 4.6, Cl 132, glucosa 118, Cr 0.9.',
+pregunta:'Con hipoperfusión periférica + Na >160, ¿cuál es el primer paso inmediato para restaurar la volemia de forma segura?',
+opciones:['Bolo IV de cristaloide isotónico (salino 0.9% o Ringer lactato) 10–20 mL/kg (70–140 mL) en 20–30 min hasta normalizar perfusión y gasto urinario (el salino 0.9% [154 mEq/L] sigue siendo relativamente hipotónico frente al plasma de 164 mEq/L y no provoca caída brusca de la osmolaridad)','Bolo de glucosada 5% sin sodio a 20 mL/kg en 15 min para bajar rápido el Na','Agua libre por SNG a 50 mL/kg en 1 h','Bicarbonato de sodio 1 M a 2 mEq/kg','Furosemida IV antes de líquidos'],
+justificacion:'La reanimación inicial del espacio intravascular siempre con fluidos isotónicos. Soluciones hipotónicas en bolo provocan desplazamiento osmótico rápido de agua hacia neuronas con osmoles idiogénicos.',
+referencia:'NICE NG29. Intravenous fluid therapy in children and young people in hospital (actualizado 2020); Practical Management of Neonatal/Pediatric Hypernatremic Dehydration 2024-2025.'},
+
+{id:66,tema:'nef',subtema:'Deshidratación hipernatrémica: velocidad de corrección',
+escenario:'El lactante de 5 meses con Na 164 mEq/L recibió bolo de salino 0.9%: FC 136, TA 88/54, llenado capilar 2 s. Debe calcularse fase de reposición del déficit de agua libre + mantenimiento.',
+pregunta:'Según NICE NG29, ¿en cuánto tiempo planificar la corrección del déficit y cuál es la velocidad máxima segura de descenso del sodio?',
+opciones:['Reposición lenta del déficit + mantenimiento en 48–72 h (solución glucosalina con Na titulado 0.45%–0.9%), con descenso de Na ≤0.5 mEq/L/h (máximo 10–12 mEq/L/día), con electrolitos cada 2–4 h','Corregir todo el déficit en 6 h con descenso de 3 mEq/L/h','Corregir en 12 h con descenso de 24 mEq/L el primer día','Administrar solo agua libre IV sin Na por 24 h','Mantener salino 3% por 48 h'],
+justificacion:'En hipernatremia sostenida (>24–48 h) las neuronas generan osmoles idiogénicos; descensos >0.5 mEq/L/h causan edema cerebral mortal.',
+referencia:'NICE NG29. Intravenous fluid therapy in children and young people in hospital (actualizado 2020).'},
+
+{id:67,tema:'nef',subtema:'Edema cerebral por corrección rápida de hiperNa',
+escenario:'El lactante de 5 meses con hipernatremia inicial (Na 164): durante la hospitalización, un residente aceleró la infusión hipotónica y el Na cayó de 162 a 149 mEq/L en 8 h (1.6 mEq/L/h). Súbitamente: fontanela abombada, bradicardia y crisis tónico-clónica generalizada.',
+pregunta:'¿Cuál es el tratamiento de emergencia específico para revertir este edema cerebral agudo?',
+opciones:['Bolo IV de solución salina hipertónica al 3% (3–5 mL/kg = 20–35 mL) en 10–15 min para elevar la osmolaridad plasmática ~3–5 mEq/L y extraer agua del parénquima, junto con manejo de la crisis (lorazepam/midazolam) y ajuste a la baja del aporte de agua libre','Bolo adicional de agua libre o glucosada 5%','Punción lumbar evacuadora inmediata','Furosemida + acetazolamida IV en bolo','Exanguinotransfusión parcial'],
+justificacion:'La solución salina hipertónica al 3% revierte de inmediato el gradiente osmótico del edema cerebral tanto en hiponatremia sintomática como en sobrecorrección de hipernatremia.',
+referencia:'NICE NG29. Intravenous fluid therapy in children and young people in hospital (actualizado 2020).'},
+
+{id:68,tema:'gas',subtema:'GEA por rotavirus: probióticos',
+escenario:'Lactante femenino de 11 meses, 9.2 kg (p50), talla 74 cm (p50), no vacunada contra rotavirus, guardería. 48 h de fiebre 38.6 °C + 4 vómitos, luego 8 evacuaciones líquidas explosivas ácidas (eritema perianal), sin sangre. Deshidratación leve-moderada (mucosa seca, ojos ligeramente hundidos, alerta). Plan B con SRO + ondansetrón VO.',
+pregunta:'Según el position paper ESPGHAN 2023 sobre probióticos en GEA, ¿qué cepa acorta la duración (~24 h) como adyuvante a SRO y cuál está desaconsejada?',
+opciones:['Se recomienda Saccharomyces boulardii (250–750 mg/día × 5–7 días) o Lacticaseibacillus rhamnosus GG (≥10^10 UFC/día × 5–7 días), recomendación condicional con certeza baja; se desaconseja Bacillus clausii (O/C, SIN, N/R, T) por ausencia de eficacia en ensayos rigurosos','Se recomienda Bacillus clausii como primera línea y se desaconseja S. boulardii','Se recomienda Enterococcus faecium SF68 en todos los lactantes y se desaconseja L. rhamnosus GG','Los probióticos sustituyen por completo a la SRO','Yogur comercial pasteurizado como único tratamiento'],
+justificacion:'ESPGHAN 2023 emitió recomendación específica contra Bacillus clausii (ampliamente usado en Latinoamérica) tras ensayos aleatorizados que mostraron cero beneficio.',
+referencia:'Szajewska H, et al. Probiotics for the Management of Pediatric Gastrointestinal Disorders: ESPGHAN Position Paper. JPGN 2023;76:232-247.'},
+
+{id:69,tema:'gas',subtema:'Intolerancia secundaria a lactosa postrotavirus',
+escenario:'La paciente de 11 meses con GEA por rotavirus superó la deshidratación y volvió a fórmula estándar + sólidos. Al 10.º día persiste con evacuaciones líquidas explosivas espumosas inmediatamente post-biberón, borborigmos, distensión y dermatitis perianal erosiva ácida; buen estado general, apetito conservado, sin fiebre ni sangre.',
+pregunta:'¿A qué complicación transitoria secundaria al daño vellositario por rotavirus corresponde y cuál es el manejo nutricional indicado?',
+opciones:['Intolerancia secundaria transitoria a la lactosa (pérdida de lactasa apical vellositaria → fermentación colónica de lactosa hacia ácidos grasos de cadena corta e H₂); indicar fórmula temporal sin lactosa por 2–4 semanas (mantener seno materno si lo recibiera) y reintroducir la estándar gradualmente','Alergia grave IgE a proteínas de leche de vaca; adrenalina IM y dieta elemental de por vida','Enfermedad de Crohn de inicio temprano; infliximab IV','Fibrosis quística pancreática; lipasa pancreática de por vida','Giardiasis crónica; tinidazol oral 14 días'],
+justificacion:'Aunque las fórmulas sin lactosa no se indican de rutina en el día 1, sí cuando se desarrolla diarrea osmótica ácida persistente (>7–10 días) tras reintroducir leche de vaca.',
+referencia:'Guarino A, et al. ESPGHAN/ESPID Evidence-Based Guidelines for the Management of Acute Gastroenteritis in Children (vigente 2020-2024); Florez ID, et al. JAMA Netw Open 2020;3:e2024886.'},
+
+{id:70,tema:'gas',subtema:'Prevención primaria de rotavirus',
+escenario:'La paciente de 11 meses (no vacunada contra rotavirus) resolvió la diarrea en 72 h tras cambio temporal a fórmula sin lactosa y tolera fórmula regular al mes. Los padres preguntan por prevención primaria.',
+pregunta:'¿Cuál es la medida de prevención primaria más eficaz contra rotavirus y la edad máxima límite según AAP 2024?',
+opciones:['Vacuna oral contra rotavirus (monovalente 2 dosis o pentavalente 3 dosis); primera dosis entre 6 y 14 semanas 6 días y última completada antes de 8 meses 0 días (no iniciar ni aplicar después de los 8 meses por riesgo de invaginación)','Inmunoglobulina oral mensual; vacuna hasta los 5 años','Vacuna IM contra rotavirus a los 12 meses y 4 años','Ribavirina oral en invierno','Probióticos diarios desde el nacimiento hasta los 3 años'],
+justificacion:'AAP y OMS establecen ventanas estrictas de edad (1.ª dosis <15 semanas, última ≤8 meses 0 días) para maximizar protección temprana y minimizar riesgo basal de intususcepción.',
+referencia:'AAP Red Book 2024–2027 (Rotavirus Infections).'},
+
+{id:71,tema:'inf',subtema:'Disentería por Shigella: diagnóstico',
+escenario:'Preescolar masculino de 3 años 9 meses, 15.5 kg (p50), talla 100 cm (p50); sano, vacunas completas. 24 h de fiebre 39.7 °C, dolor cólico, pujo, tenesmo y 10 evacuaciones escasas de moco, pus y sangre roja brillante, con deshidratación moderada. Moco fecal: abundantes PMN (>50/campo) y eritrocitos.',
+pregunta:'Ante disentería febril aguda en preescolar, ¿cuál es el agente bacteriano más frecuente (México y mundial) y el estudio microbiológico antes de tratar?',
+opciones:['Shigella spp. (S. sonnei o S. flexneri), seguida de Campylobacter jejuni y Salmonella no tifoídica; coprocultivo con antibiograma (o panel molecular múltiple en heces seguido de cultivo para susceptibilidad) antes de iniciar antibiótico','Entamoeba histolytica; solo coproparasitoscópico en fresco e iniciar metronidazol universal','Clostridioides difficile; detección de toxina A/B únicamente','Rotavirus G1P[8]; ELISA en heces y no dar antibióticos','Vibrio cholerae; cultivo en TCBS únicamente'],
+justificacion:'Dosis infectante de Shigella 10–100 microorganismos (transmisión fecal-oral directa en guarderías/hogares). Dada la creciente resistencia MDR/XDR, el cultivo con sensibilidad es indispensable.',
+referencia:'AAP Red Book 2024–2027 (Shigella Infections).'},
+
+{id:72,tema:'inf',subtema:'Shigella: antibiótico empírico de primera línea',
+escenario:'Se inició SRO y se envió coprocultivo del preescolar de 3 años 9 meses con disentería febril grave por Shigella. Se decide antibioticoterapia empírica dirigida.',
+pregunta:'Según AAP 2024 y OMS, ¿cuál es el antibiótico empírico de primera línea y qué fármacos deben evitarse?',
+opciones:['Azitromicina VO 10–12 mg/kg día 1 (155–186 mg), luego 5–6 mg/kg/día días 2–5 (o ceftriaxona IV/IM 50–75 mg/kg/día por 5 días si hospitalizado grave); evitar ampicilina y TMP-SMX empíricos (resistencia >70–80%), fluoroquinolonas como primera línea en niños pequeños y loperamida estrictamente','Amoxicilina o TMP-SMX como primera línea empírica','Metronidazol VO 30 mg/kg/día × 10 días','Cefalexina VO 50 mg/kg/día × 7 días','Clindamicina VO 20 mg/kg/día × 5 días'],
+justificacion:'El tratamiento antibiótico de Shigella acorta fiebre y disentería, previene complicaciones invasivas y erradica la excreción fecal contagiosa en 48–72 h.',
+referencia:'AAP Red Book 2024–2027 (Shigella Infections).'},
+
+{id:73,tema:'inf',subtema:'Shigella: convulsión febril',
+escenario:'El preescolar de 3 años 9 meses con shigelosis, antes del efecto antibiótico, presenta pico febril 40.1 °C + convulsión tónico-clónica generalizada de 2 min. Recupera alerta normal a los 10 min sin déficit focal ni signos meníngeos.',
+pregunta:'¿Cuál es la explicación fisiopatológica más frecuente y la conducta apropiada?',
+opciones:['Crisis convulsiva febril asociada a shigelosis (10–15% de niños <5 años con Shigella; desencadenada por respuesta inflamatoria febril intensa y citocinas proinflamatorias IL-1β/TNF-α, no por "neurotoxina de Shiga"); manejo: control térmico, completar antibiótico e hidratación, tranquilizar a los padres sin antiepilépticos crónicos si es crisis febril simple con recuperación neurológica completa','Absceso cerebral múltiple por Shigella; craneotomía descompresiva','Síndrome de Reye; manitol + dexametasona en dosis altas','Meningitis purulenta por Shigella; antibióticos intratecales 21 días','Síndrome de Guillain-Barré hiperagudo; plasmaféresis'],
+justificacion:'Shigella es el patógeno entérico más fuertemente asociado a crisis convulsivas febriles en preescolares. Si hay recuperación basal normal sin signos meníngeos, no requiere anticonvulsivos de mantenimiento.',
+referencia:'AAP Red Book 2024–2027 (Shigella Infections).'},
+
+{id:74,tema:'inf',subtema:'Enterocolitis por Campylobacter jejuni',
+escenario:'Escolar masculino de 10 años 4 meses, 33 kg (p50), talla 140 cm (p50); sano. 36 h de fiebre 38.8 °C, cefalea, mialgias y dolor en FID con 7 evacuaciones con moco y estrías sanguinolentas. Comió pollo asado insuficientemente cocido hace 3 días. Dolor en FID sin defensa ni rebote. USG: apéndice normal (4.5 mm compresible), engrosamiento inflamatorio de íleon terminal y colon ascendente con adenitis mesentérica reactiva.',
+pregunta:'Con cuadro de enterocolitis febril con dolor en FID ("pseudoapendicitis") tras aves mal cocidas, ¿cuál es el agente más probable y el estudio confirmatorio?',
+opciones:['Campylobacter jejuni (bacilo gramnegativo curvo microaerófilo "en ala de gaviota"; causa bacteriana líder de GEA asociada a aves mal cocidas que produce ileocolitis terminal simulando apendicitis); confirmar con coprocultivo en medios selectivos microaerófilos (Campy-BAP o Skirrow a 42 °C) o PCR múltiple en heces','Yersinia pestis; hemocultivos y tinción de Wayson','Giardia lamblia; prueba de la cuerda encapsulada','Cryptosporidium parvum; tinción de Kinyoun modificada','Strongyloides stercoralis; método de Baermann en heces'],
+justificacion:'Campylobacter jejuni y Yersinia enterocolitica causan ileítis terminal y adenitis mesentérica que pueden confundirse con apendicitis aguda en escolares/adolescentes.',
+referencia:'AAP Red Book 2024–2027 (Campylobacter Infections).'},
+
+{id:75,tema:'inf',subtema:'Campylobacter: antibiótico de elección',
+escenario:'PCR múltiple en heces confirma Campylobacter jejuni en el escolar de 10 años con enterocolitis (48 h de evolución). Persiste fiebre 38.9 °C, dolor abdominal intenso y evacuaciones sanguinolentas.',
+pregunta:'Según AAP 2024, ¿qué efecto tiene el antibiótico temprano en la enteritis por Campylobacter y cuál es de primera línea?',
+opciones:['Administrado dentro de los primeros 3 días, acorta la diarrea y elimina la excreción fecal en 2–3 días; primera línea: azitromicina VO 10 mg/kg/día (330 mg, máx 500 mg) una vez al día × 3 días (o eritromicina × 5 días), dado que la resistencia a fluoroquinolonas supera el 30–50%','Los antibióticos están estrictamente contraindicados porque inducen síndrome urémico hemolítico','Ceftriaxona IM dosis única 50 mg/kg (ineficaz frente a Campylobacter)','Vancomicina VO 10 mg/kg cada 6 h × 10 días','Amoxicilina VO 50 mg/kg/día × 7 días'],
+justificacion:'Campylobacter es intrínsecamente resistente a muchas cefalosporinas y penicilinas, y presenta altas tasas de resistencia a ciprofloxacino; azitromicina es el agente de elección.',
+referencia:'AAP Red Book 2024–2027 (Campylobacter Infections).'},
+
+{id:76,tema:'inf',subtema:'Síndrome de Guillain-Barré post-Campylobacter',
+escenario:'El escolar de 10 años se recupera de la enterocolitis por Campylobacter. Dos semanas después: debilidad muscular simétrica progresiva ascendente iniciada en pies y piernas (dificultad para subir escaleras), parestesias distales y arreflexia patelar y aquílea bilateral.',
+pregunta:'¿Cuál es esta complicación autoinmune postinfecciosa y su mecanismo inmunopatogénico?',
+opciones:['Síndrome de Guillain-Barré (polirradiculoneuropatía inflamatoria aguda) por mimetismo molecular entre lipooligosacáridos de Campylobacter jejuni y gangliósidos periféricos GM1/GD1a; primera línea en pediatría: IGIV 2 g/kg en 2–5 días o plasmaféresis','Miastenia gravis neonatal transitoria; anticuerpos anti-receptor de acetilcolina','Mielitis transversa por invasión bacteriana directa','Poliomielitis paralítica aguda por enterovirus','Distrofia muscular de Duchenne descompensada'],
+justificacion:'Campylobacter jejuni es el antecedente infeccioso identificable más común (30–40%) del SGB en niños y adultos.',
+referencia:'AAP Red Book 2024–2027 (Campylobacter Infections); van Doorn PA, et al. EAN/PNS Guideline on Guillain-Barré Syndrome, 2023.'},
+
+{id:77,tema:'inf',subtema:'Salmonelosis no tifoídica en <3 meses',
+escenario:'Lactante masculino de 2 meses 10 días (10 semanas), 5.4 kg (p50), talla 59 cm (p50); a término, fórmula, tortuga como mascota. 24 h de fiebre 39.0 °C, irritabilidad y 6 evacuaciones mucosanguinolentas verdosas. Febril 38.9 °C, irritable consolable, fontanela normotensa, llenado capilar 2 s, deshidratación leve. Panel molecular en heces: Salmonella enterica serovar Typhimurium.',
+pregunta:'En inmunocompetentes >1 año la GEA por Salmonella no tifoídica no se trata, pero ¿por qué la edad <3 meses cambia el riesgo y la conducta según AAP 2024?',
+opciones:['Los <3 meses tienen riesgo elevado (5–10%) de bacteriemia secundaria e infecciones focales invasivas graves (meningitis, osteomielitis, artritis séptica) por inmadurez de la inmunidad celular y reticuloendotelial; requieren evaluación completa de sepsis (hemocultivos, urocultivo ± PL) e inicio inmediato de antibiótico IV empírico','Porque en <3 meses Salmonella produce toxina Shiga y SHU','Porque en <3 meses causa intususcepción ileocólica en 80%','Porque los <3 meses no responden a SRO','No cambia en absoluto; alta sin antibióticos ni estudios como en un niño de 5 años'],
+justificacion:'Grupos de alto riesgo con indicación de antibiótico en salmonelosis no tifoídica: <3 meses, inmunodeficiencias, drepanocitosis/asplenia, EII, sepsis/bacteriemia documentada.',
+referencia:'AAP Red Book 2024–2027 (Salmonella Infections).'},
+
+{id:78,tema:'inf',subtema:'Salmonella: antibiótico IV empírico',
+escenario:'Se tomaron hemocultivos, urocultivo y LCR del lactante de 10 semanas con salmonelosis. LCR normal (3 leucocitos/µL, proteínas 38, glucosa 62). Hospitalizado con hidratación; pendiente antibiograma.',
+pregunta:'Según AAP 2024, ¿cuál es el esquema antibiótico IV empírico de primera línea para este lactante de 10 semanas con salmonelosis?',
+opciones:['Ceftriaxona IV 50–75 mg/kg/día cada 24 h (270–405 mg/día) o cefotaxima IV (ajustando según sensibilidad: 7–10 días si hemocultivos negativos; 14 días si bacteriemia sin meningitis)','Gentamicina IV en monoterapia (ineficaz intracelular frente a Salmonella)','Vancomicina IV 15 mg/kg cada 6 h','Clindamicina IV 10 mg/kg cada 8 h','Cefalexina VO 25 mg/kg/día'],
+justificacion:'Salmonella es patógeno intracelular facultativo: aminoglucósidos y cefalosporinas 1.ª/2.ª generación carecen de eficacia in vivo incluso si parecen susceptibles in vitro; las cefalosporinas de 3.ª generación tienen excelente penetración tisular y actividad intracelular.',
+referencia:'AAP Red Book 2024–2027 (Salmonella Infections).'},
+
+{id:79,tema:'inf',subtema:'Salmonella: prevención de reptiles',
+escenario:'El lactante de 10 semanas con salmonelosis completó 7 días de ceftriaxona, hemocultivos y urocultivo negativos a 72 h, con excelente evolución. Antes del alta, la familia pregunta por la tortuga mascota.',
+pregunta:'¿Qué medida educativa de salud pública/prevención secundaria debe indicarse obligatoriamente antes del egreso?',
+opciones:['Retirar del hogar o evitar todo contacto de niños <5 años con reptiles y anfibios (tortugas, iguanas, lagartijas, ranas) y aves de corral de traspatio (hasta 90% de los reptiles son portadores intestinales asintomáticos de Salmonella); reforzar lavado estricto de manos y preparación higiénica de biberones','Antibióticos profilácticos mensuales al lactante mientras conserve la tortuga','Coprocultivos semanales 6 meses y aislamiento hasta 3 cultivos negativos','Vacuna inmediata contra Salmonella Typhi a los 2 meses','Hervir la fórmula en polvo con antibióticos antes de cada toma'],
+justificacion:'AAP y CDC recomiendan enfáticamente no tener reptiles ni anfibios en hogares con niños <5 años por riesgo recurrente de salmonelosis invasiva.',
+referencia:'AAP Red Book 2024–2027 (Salmonella Infections).'},
+
+{id:80,tema:'gas',subtema:'C. difficile: diagnóstico en niños ≥2 años',
+escenario:'Escolar femenino de 7 años 5 meses, 24 kg (p50), talla 123 cm (p50); sin antecedentes crónicos. Hace 10 días: hospitalización 4 días por celulitis facial tratada con clindamicina IV y luego VO ambulatoria. Ahora 48 h de fiebre 38.4 °C, dolor cólico difuso y 8 evacuaciones líquidas verdosas fétidas con moco. Dolor abdominal difuso moderado sin irritación peritoneal; deshidratación leve. Leucocitos 14,800 (74% neutrófilos), albúmina 3.8, Cr 0.5.',
+pregunta:'Con exposición reciente a clindamicina + hospitalización en niña >2 años, ¿cuál es la sospecha diagnóstica y el protocolo según AAP 2024 e IDSA/SHEA?',
+opciones:['Infección por C. difficile (ICD) no grave (las pruebas solo en ≥2 años con diarrea clínicamente significativa, porque <1–2 años tienen alta colonización asintomática); confirmar con algoritmo de múltiples pasos: GDH + inmunoensayo para toxinas A/B (o NAAT) en heces líquidas','Intolerancia alimentaria simple; no estudiar y dar loperamida','Disentería amebiana aguda; serología IgG anti-Entamoeba','Enfermedad celíaca de inicio súbito; biopsia duodenal urgente','Colitis ulcerosa crónica; mesalazina VO inmediata'],
+justificacion:'La clindamicina, las cefalosporinas de 3.ª generación y las fluoroquinolonas son los principales disruptores de la microbiota que permiten la proliferación de C. difficile productor de toxinas TcdA/TcdB.',
+referencia:'AAP Red Book 2024–2027 (Clostridioides difficile); Johnson S, et al. IDSA/SHEA 2021 Focused Update. Clin Infect Dis 2021;73:e1029-e1044.'},
+
+{id:81,tema:'gas',subtema:'C. difficile: tratamiento de primera línea',
+escenario:'La paciente de 7 años con ICD (GDH y toxinas A/B positivas) suspende clindamicina oral e inicia SRO. Primer episodio no grave, 24 kg.',
+pregunta:'Según IDSA/SHEA 2021 y AAP 2024, ¿cuál es el tratamiento oral de primera elección en este primer episodio no grave?',
+opciones:['Vancomicina VO 10 mg/kg/dosis (240 mg, máx 125 mg/dosis en esquemas estándar) cada 6 h × 10 días, o fidaxomicina VO (suspensión/tabletas) × 10 días, preferida sobre metronidazol por mayor curación sostenida y menor recurrencia','Metronidazol VO 30 mg/kg/día como primera línea superior en todos los casos','Vancomicina IV 15 mg/kg cada 6 h × 10 días (ineficaz por no alcanzar concentraciones intraluminales)','Ciprofloxacino VO 15 mg/kg cada 12 h × 7 días','Rifaximina VO 3 días como monoterapia inicial'],
+justificacion:'IDSA/SHEA y AAP relegaron el metronidazol a alternativa secundaria (solo si no hay vancomicina o fidaxomicina). Vancomicina IV no sirve porque no se excreta a la luz colónica.',
+referencia:'Johnson S, et al. IDSA/SHEA 2021 Focused Update. Clin Infect Dis 2021;73:e1029-e1044; AAP Red Book 2024–2027.'},
+
+{id:82,tema:'gas',subtema:'C. difficile: control de infecciones',
+escenario:'La paciente de 7 años completó 10 días de vancomicina oral con resolución completa de fiebre y normalización de evacuaciones.',
+pregunta:'¿Qué medida de control de infecciones/precaución domiciliaria es esencial considerando la resistencia intrínseca de las esporas de C. difficile?',
+opciones:['Higiene de manos mecánica con agua y jabón (el gel alcohólico no inactiva las esporas), limpieza ambiental con esporicidas (hipoclorito de sodio), aislamiento de contacto durante el episodio diarreico, y NO realizar pruebas repetidas de "cura" en heces tras la resolución clínica (la excreción asintomática puede persistir semanas sin requerir retratamiento)','Higiene de manos exclusivamente con gel hidroalcohólico al 70% + prueba de cura en heces al terminar vancomicina','Vancomicina oral profiláctica de por vida con cualquier fármaco','Inmunoglobulina IV mensual × 6 meses','Loperamida ante cualquier evacuación blanda por 1 año'],
+justificacion:'Las esporas de C. difficile resisten el alcohol y persisten meses en superficies; solo el arrastre mecánico con agua y jabón y los esporicidas clorados las eliminan eficazmente.',
+referencia:'AAP Red Book 2024–2027 (Clostridioides difficile).'}, {id:83,tema:'neo',subtema:'Enfermedad hemorrágica tardía por déficit de vitamina K',
+escenario:'Lactante masculino de 6 semanas (42 días), 4.6 kg (p50), talla 55 cm (p50); parto domiciliario sin profilaxis neonatal, seno materno exclusivo. 12 h de palidez progresiva, rechazo al seno, vómitos en proyectil, irritabilidad → letargia y sangrado persistente en sitio de punción. Pálido, somnoliento, fontanela abombada y tensa, anisocoria leve (pupila derecha 4 mm poco reactiva, izquierda 2.5 mm), equimosis en tronco. Hb 7.2, leucos 11,400, plaquetas 345,000, TP >90 s (INR >8.0), TTPa >120 s, fibrinógeno 260.',
+pregunta:'Con parto domiciliario sin profilaxis, lactancia materna, coagulopatía grave con plaquetas/fibrinógeno normales e HIC aguda, ¿cuál es el diagnóstico y el tratamiento hemostático inmediato?',
+opciones:['Enfermedad hemorrágica tardía por déficit de vitamina K (VKDB tardía) con hemorragia intracraneal; vitamina K1 IV lenta 1–2 mg + complejo protrombínico de 4 factores (25–50 UI/kg) o PFC (15–20 mL/kg) + concentrado eritrocitario + TC craneal urgente','CID por sepsis tardía; heparina no fraccionada + concentrado plaquetario','Hemofilia A congénita; factor VIII recombinante 50 UI/kg','Trombocitopenia aloinmune neonatal; IGIV 2 g/kg','Enfermedad de von Willebrand tipo 3; desmopresina IV'],
+justificacion:'La VKDB tardía ocurre entre las 2 y 12 semanas (pico 3–8) casi exclusivamente en lactantes al pecho sin vitamina K IM al nacer, y debuta con hemorragia intracraneal en >50–60% de los casos. La vitamina K1 restaura la síntesis de factores II, VII, IX, X en 4–6 h; el complejo protrombínico o PFC repone factores de inmediato.',
+referencia:'Hand I, Noble L, Abrams SA; AAP Committee on Fetus and Newborn. Vitamin K and the Newborn Infant. Pediatrics 2022;149:e2021056036.'},
+
+{id:84,tema:'neo',subtema:'VKDB tardía: descartar causa secundaria',
+escenario:'TC de cráneo: hematoma subdural agudo frontoparietal derecho con desviación de línea media 6 mm; evacuación neuroquirúrgica exitosa tras corregir INR a 1.1. A las 6 h de vitamina K1 IV los tiempos de coagulación se normalizan por completo.',
+pregunta:'¿Qué estudio adicional debe realizarse en todo lactante con VKDB tardía para descartar una causa secundaria de malabsorción lipídica antes del egreso?',
+opciones:['Perfil hepático completo con bilirrubina directa/conjugada, GGT y ácidos biliares (± cribado de fibrosis quística si hay datos digestivos), para descartar colestasis neonatal oculta (atresia de vías biliares, déficit de alfa-1-antitripsina) que impida la absorción de vitaminas liposolubles','Aspirado de médula ósea y cariotipo','Electroforesis de hemoglobina y fragilidad osmótica','Biopsia muscular de cuádriceps','Angiorresonancia renal bilateral'],
+justificacion:'La VKDB tardía puede ser la primera manifestación hemorrágica de una colestasis hepatobiliar subclínica, incluso en niños con profilaxis oral o incompleta.',
+referencia:'Hand I, Noble L, Abrams SA; AAP Committee on Fetus and Newborn. Pediatrics 2022;149:e2021056036.'},
+
+{id:85,tema:'neo',subtema:'Profilaxis con vitamina K al nacer',
+escenario:'El perfil hepático del lactante con VKDB tardía descarta colestasis (BD 0.2 mg/dL). Se confirma VKDB tardía idiopática por omisión de profilaxis neonatal. Los padres preguntan cómo se previene.',
+pregunta:'Según la declaración AAP 2022, ¿cuál es el régimen profiláctico de oro para prevenir la forma clásica y tardía de VKDB en todos los recién nacidos?',
+opciones:['Dosis única IM de vitamina K1 (fitomenadiona) 1.0 mg dentro de las primeras 6 h para todos los RN >1,500 g (0.3–0.5 mg/kg IM en pretérmino ≤1,500 g), ya que los esquemas orales son inferiores para prevenir VKDB tardía','2 mg de vitamina K1 VO al nacimiento únicamente','1 mg VO al nacer + 1 mg a los 7 días + 1 mg a las 4 semanas','Suplementación materna con 5 mg/día de vitamina K sin tratar al neonato','No administrar profilaxis a RN a término sanos salvo que presenten sangrado'],
+justificacion:'El depósito muscular de fitomenadiona actúa como liberación sostenida durante semanas, eliminando prácticamente el riesgo de VKDB tardía. Los esquemas orales no son equivalentes.',
+referencia:'Hand I, Noble L, Abrams SA; AAP Committee on Fetus and Newborn. Pediatrics 2022;149:e2021056036.'},
+
+{id:86,tema:'hem',subtema:'PTI: indicación de aspirado medular',
+escenario:'Preescolar femenino de 4 años 2 meses, 16 kg (p50), talla 102 cm (p50); sana, vacunas completas. 24 h de petequias puntiformes generalizadas, equimosis en extremidades/tronco y epistaxis anterior leve autolimitada. IRA viral 12 días antes. Afebril, activa, sin dolor óseo, sin adenopatías significativas ni hepatoesplenomegalia. Hb 12.2, VCM 80, leucos 8,100 con fórmula normal, plaquetas 8,000; frotis con plaquetas grandes aisladas, series roja y blanca normales sin blastos.',
+pregunta:'Ante una PTI de reciente diagnóstico típica en preescolar previamente sana sin síntomas constitucionales ni visceromegalias, ¿cuál es la conducta correcta respecto al aspirado de médula ósea?',
+opciones:['No realizar aspirado de médula ósea en presentación típica de PTI (trombocitopenia aislada con Hb, leucos y frotis normales, sin fiebre prolongada, dolor óseo, pérdida de peso ni hepatoesplenomegalia); reservar el estudio medular para cuadros atípicos o previo a corticoterapia si hay dudas diagnósticas','Aspirado y biopsia de médula ósea obligatorios en todos los niños antes de cualquier decisión','Biopsia ganglionar y TC corporal total','Tiempo de sangrado de Ivy y biopsia de piel','Diferir la biometría de control 6 meses'],
+justificacion:'Guías ASH y revisiones hematológicas pediátricas confirman que el riesgo de pasar por alto una leucemia aguda en trombocitopenia estrictamente aislada con frotis normal es <0.1%.',
+referencia:'Grace RF, Lambert MP. An update on pediatric ITP. Blood 2022;140:542-555; Consolini R, et al. AIEOP guidelines for pediatric ITP, 2021.'},
+
+{id:87,tema:'hem',subtema:'PTI con púrpura húmeda: tratamiento de primera línea',
+escenario:'La niña de 4 años con PTI (plaquetas 8,000) presenta epistaxis anterior persistente y dos vesículas hemorrágicas en mucosa yugal (púrpura húmeda / sangrado mucoso Grado 3 de Buchanan), con Hb 11.9 y estabilidad hemodinámica.',
+pregunta:'Con plaquetas de 8,000/µL y sangrado mucoso activo (púrpura húmeda), ¿cuál es el tratamiento de primera línea y qué intervención debe evitarse salvo hemorragia potencialmente letal?',
+opciones:['IGIV en dosis única de 0.8–1.0 g/kg (12.8–16 g) (eleva plaquetas en 24–48 h al bloquear receptores Fcγ esplénicos) o ciclo corto de corticoides (prednisona 2–4 mg/kg/día por 4–7 días) + ácido tranexámico, evitando transfusión de plaquetas (los autoanticuerpos destruyen rápidamente las plaquetas transfundidas)','Transfusión inmediata de 2 unidades de concentrado plaquetario como único tratamiento','Esplenectomía laparoscópica de urgencia','Rituximab IV semanal × 4 semanas como primera línea','Eltrombopag + micofenolato desde el primer día'],
+justificacion:'En niños sin sangrado o solo petequias/equimosis se prefiere observación expectante; la púrpura húmeda indica tratamiento de primera línea. La transfusión de plaquetas se reserva para hemorragia que amenaza la vida.',
+referencia:'Grace RF, Lambert MP. An update on pediatric ITP. Blood 2022;140:542-555.'},
+
+{id:88,tema:'hem',subtema:'PTI: pronóstico y medidas de seguridad',
+escenario:'La paciente de 4 años recibió IGIV 1 g/kg; cesa el sangrado mucoso y a las 48 h las plaquetas ascienden a 78,000/µL. Se prepara egreso domiciliario.',
+pregunta:'¿Cuál es el pronóstico natural de la PTI aguda infantil y qué medidas de seguridad indicar a los padres durante el seguimiento?',
+opciones:['70–80% presentan remisión espontánea completa en 6–12 meses; evitar AAS y AINEs, restringir deportes de contacto/alto impacto mientras plaquetas <30,000–50,000/µL y acudir a urgencias ante cefalea intensa, alteración neurológica o sangrado mucoso abundante','90% evoluciona a trombocitopenia crónica refractaria que requiere esplenectomía antes de los 6 meses','Prednisona oral continua 12 meses aunque las plaquetas se normalicen','Contraindicar todas las vacunas del esquema de por vida','AAS a dosis bajas para prevenir trombosis paradójica'],
+justificacion:'A diferencia del adulto, la PTI pediátrica es mayoritariamente aguda y autolimitada, con riesgo de hemorragia intracraneal <0.5%.',
+referencia:'Grace RF, Lambert MP. An update on pediatric ITP. Blood 2022;140:542-555.'},
+
+{id:89,tema:'nef',subtema:'Vasculitis por IgA: diagnóstico y estudios iniciales',
+escenario:'Escolar masculino de 6 años 4 meses, 21 kg (p50), talla 117 cm (p50); sano. 48 h de púrpura palpable no desaparece a digitopresión, simétrica en glúteos y caras extensoras de miembros inferiores, con dolor e inflamación periarticular en ambos tobillos y rodillas (impide caminar) y dolor abdominal cólico difuso. FC 104, FR 22, TA 102/64, T 37.3 °C. Hb 12.6, leucos 10,800, plaquetas 365,000, coagulación normal.',
+pregunta:'Con criterios EULAR/PRINTO/PRES (púrpura palpable no trombocitopénica + artralgias/artritis + dolor abdominal), ¿cuál es el diagnóstico y los estudios iniciales obligatorios?',
+opciones:['Vasculitis por IgA (antes Púrpura de Henoch-Schönlein), vasculitis leucocitoclástica de pequeños vasos mediada por IgA1; examen general de orina (tira reactiva y sedimento), relación proteína/creatinina aislada, TA y química con creatinina para evaluar compromiso renal inicial','Meningococcemia fulminante; ceftriaxona IV + punción lumbar inmediata','Trombocitopenia inmune primaria; anticuerpos antiplaquetarios','Púrpura trombocitopénica trombótica; actividad de ADAMTS13 urgente','Lupus eritematoso sistémico; biopsia renal percutánea inmediata en todos los casos'],
+justificacion:'La cifra normal o elevada de plaquetas distingue de inmediato a la vasculitis por IgA de las púrpuras trombocitopénicas. El pronóstico a largo plazo depende casi exclusivamente de la afectación renal (nefritis por IgA).',
+referencia:'KDIGO 2021 Clinical Practice Guideline for the Management of Glomerular Diseases. Kidney Int 2021;100:S1-S276.'},
+
+{id:90,tema:'nef',subtema:'Vasculitis IgA: dolor abdominal y corticoides',
+escenario:'La vasculitis por IgA del escolar de 6 años tiene EGO inicial normal (sin hematuria/proteinuria) y creatinina 0.45. Al tercer día: dolor abdominal cólico intenso que limita la ingesta, sangre oculta en heces positiva; USG descarta invaginación intestinal.',
+pregunta:'Según KDIGO 2021/SHARE, ¿cuál es el tratamiento del dolor abdominal intenso sin invaginación y qué efecto tienen los corticoides sobre la historia natural renal?',
+opciones:['Ciclo corto de corticoides sistémicos (prednisona 1–2 mg/kg/día = 21–42 mg/día por 1–2 semanas con descenso gradual): acortan intensidad y duración del dolor abdominal/articular grave, pero NO previenen el desarrollo posterior de nefritis por IgA (nunca prescribir profiláctico para evitar daño renal)','Ibuprofeno 10 mg/kg cada 6 h como analgésico principal','Ciclofosfamida IV inmediata','Laparotomía exploradora diagnóstica','IGIV 2 g/kg'],
+justificacion:'Ensayos aleatorizados grandes y KDIGO 2021 confirman que la prednisona temprana alivia síntomas GI y articulares graves pero no modifica la incidencia de nefropatía a 12 meses.',
+referencia:'KDIGO 2021 Clinical Practice Guideline for the Management of Glomerular Diseases. Kidney Int 2021;100:S1-S276.'},
+
+{id:91,tema:'nef',subtema:'Vasculitis IgA: seguimiento renal obligatorio',
+escenario:'El dolor abdominal y la púrpura del escolar de 6 años remiten completamente en 10 días; se suspende prednisona. Los padres preguntan si ya es alta definitiva.',
+pregunta:'Considerando que 85–90% de las nefritis por vasculitis IgA se manifiestan semanas después del exantema, ¿cuál es el protocolo de seguimiento renal obligatorio?',
+opciones:['Monitoreo periódico de EGO (tira/sedimento) y TA durante al menos 6–12 meses (semanal/quincenal el primer mes y luego mensual), refiriendo a nefrología pediátrica si aparece proteinuria persistente (relación proteína/creatinina >0.2 mg/mg), HTA o deterioro del filtrado glomerular','Alta definitiva sin análisis de orina posteriores','Biopsia renal protocolaria a los 3 meses aunque el EGO sea normal','Enalapril profiláctico 2 años en todos los pacientes con orina normal','USG Doppler renal mensual por 1 año'],
+justificacion:'El seguimiento urinario estructurado 6–12 meses detecta oportunamente la nefritis por IgA antes de progresar a ERC.',
+referencia:'KDIGO 2021 Clinical Practice Guideline for the Management of Glomerular Diseases. Kidney Int 2021;100:S1-S276.'},
+
+{id:92,tema:'hem',subtema:'Hemofilia A: clasificación y diagnóstico',
+escenario:'Lactante masculino de 11 meses, 9.5 kg (p50), talla 75 cm (p50). Tío materno falleció en infancia por hemorragia grave tras extracción dental. Caída leve al iniciar deambulación: hemartrosis aguda de rodilla derecha (aumento de volumen, calor, limitación a la flexión) + equimosis en glúteos y muslos. Hb 11.4, plaquetas 310,000, TP 12.1 (INR 1.0), TTPa 86 s (testigo 30) que corrige 1:1 con plasma, FvW normal.',
+pregunta:'Con herencia recesiva ligada al X, hemartrosis aguda tras trauma mínimo y TTPa aislado prolongado que corrige con plasma, ¿cuál es el estudio confirmatorio y la clasificación de gravedad por nivel residual del factor?',
+opciones:['Cuantificación de actividad coagulante de FVIII (FVIII:C) y FIX (para diferenciar hemofilia A de B, indistinguibles clínicamente): actividad <1% = grave, 1–5% = moderada, >5 a <40% = leve','Tiempo de trombina y niveles de factor XIII; <10% = grave','Agregometría plaquetaria con ristocetina; define tromboastenia de Glanzmann','Dosificación de factor VII recombinante; <5% = enfermedad de Christmas','Biopsia sinovial de rodilla derecha'],
+justificacion:'Hemofilia A (déficit de FVIII, 80–85%) y B (FIX) presentan idéntica clínica y prolongación aislada de vía intrínseca. En hemofilia grave los sangrados comienzan típicamente a los 9–12 meses al gatear/caminar.',
+referencia:'Srivastava A, et al. WFH Guidelines for the Management of Hemophilia, 3rd edition. Haemophilia 2020;26(Suppl 6):1-158.'},
+
+{id:93,tema:'hem',subtema:'Hemofilia A: tratamiento de hemartrosis aguda',
+escenario:'FVIII:C <0.5% (hemofilia A grave), FIX normal 98%. El lactante de 9.5 kg persiste con dolor intenso e inflamación progresiva en rodilla derecha.',
+pregunta:'Según WFH 3.ª edición, ¿cuál es el tratamiento agudo inmediato de elección de la hemartrosis?',
+opciones:['Concentrado de FVIII recombinante IV 25–40 UI/kg (240–380 UI) para alcanzar actividad hemostática pico 50–80% (1 UI/kg FVIII eleva actividad ~2%) + RICE (reposo, frío, compresión suave, elevación) + paracetamol (evitando AINEs y punciones IM)','Artrocentesis evacuadora inmediata sin factor VIII','Desmopresina IV (ineficaz en hemofilia A grave) + ketorolaco IM','AAS oral para reducir inflamación sinovial','Concentrado plaquetario + crioprecipitados como primera opción estándar'],
+justificacion:'Principio WFH: "tratar primero, investigar después" ante sospecha de sangrado articular o craneal, para evitar sinovitis crónica por hemosiderina y artropatía hemofílica irreversible.',
+referencia:'Srivastava A, et al. WFH Guidelines for the Management of Hemophilia, 3rd edition. Haemophilia 2020;26(Suppl 6):1-158.'},
+
+{id:94,tema:'hem',subtema:'Hemofilia A: profilaxis primaria',
+escenario:'La hemartrosis del lactante de 11 meses resolvió con factor VIII. Es su primera hemartrosis; debe establecerse el plan preventivo a largo plazo.',
+pregunta:'Según WFH 3.ª edición, ¿cuál es el estándar de oro para prevenir artropatía hemofílica en niños pequeños con hemofilia A grave?',
+opciones:['Profilaxis primaria continua temprana (antes de 2–3 años, tras la primera hemartrosis o incluso antes de cualquier sangrado) con infusiones regulares de FVIII estándar/extendido o con emicizumab SC (anticuerpo monoclonal biespecífico que mimetiza la función cofactor del FVIII uniendo FIXa y FX, eficaz en pacientes con y sin inhibidores)','Tratar solo a demanda cuando haya dolor o inflamación','Inmovilizar rodillas con férulas rígidas durante la infancia','Vitamina K oral diaria de por vida','Sinovectomía quirúrgica profiláctica de tobillos y rodillas al año'],
+justificacion:'La profilaxis primaria temprana convierte fenotípicamente una hemofilia grave en leve y preserva articulaciones sanas hacia la vida adulta. El emicizumab ha transformado el manejo en lactantes al evitar accesos venosos centrales.',
+referencia:'Srivastava A, et al. WFH Guidelines for the Management of Hemophilia, 3rd edition. Haemophilia 2020;26(Suppl 6):1-158.'},
+
+{id:95,tema:'nlg',subtema:'Convulsión febril: manejo domiciliario agudo',
+escenario:'Lactante de 18 meses (11.4 kg) con crisis febril simple (3 min, generalizada, única en 24 h, con faringitis viral y exantema súbito). Los padres quedaron muy asustados y preguntan qué hacer si vuelve a ocurrir.',
+pregunta:'Según NICE NG217 (2022/2023), ¿qué instrucciones de manejo agudo domiciliario y qué fármaco de rescate son correctos?',
+opciones:['Posición lateral de seguridad sobre superficie blanda, no introducir objetos en la boca, cronometrar la duración y medicación de rescate solo si la crisis dura >5 min: midazolam bucal/intranasal 0.2 mg/kg (2.3 mg o 2.5 mg estándar 1–4 años) o diazepam rectal 0.5 mg/kg (5 mg), llamando a emergencias si no cede tras 5 min de la dosis','Sujetar con fuerza las extremidades, introducir cuchara en la boca y dar agua fría','Paracetamol oral durante la fase tónico-clónica','Fenobarbital oral en cuanto inicie la convulsión','Sumergir al niño en bañera con agua helada'],
+justificacion:'NICE NG217 establece el umbral de 5 min para intervenir farmacológicamente en la comunidad; el midazolam bucal/intranasal es de primera elección por rapidez de absorción y facilidad de aplicación frente a la vía rectal.',
+referencia:'NICE NG217. Epilepsies in children, young people and adults, 2022 (actualizado 2023).'},
+
+{id:96,tema:'nlg',subtema:'Convulsión febril: no profilaxis, pronóstico',
+escenario:'La madre del lactante de 18 meses con crisis febril simple solicita medicamento diario o diazepam cada vez que tenga fiebre para "evitar que vuelva a convulsionar".',
+pregunta:'¿Cuál es la recomendación basada en evidencia sobre profilaxis anticonvulsiva (continua o intermitente) y el riesgo de epilepsia futura tras crisis febril simple?',
+opciones:['Desaconsejar tanto la terapia antiepiléptica continua (fenobarbital, valproato) como la profilaxis intermitente con benzodiacepinas, ya que sus efectos adversos superan el riesgo de un trastorno benigno; explicar que la recurrencia es del 30–35% y el riesgo de epilepsia futura apenas 1–2% (similar a la población general)','Ácido valproico oral diario 2 años hasta los 4 años','Fenobarbital oral diario 12 meses','Diazepam oral cada 8 h siempre que T >38.0 °C','Antipiréticos agresivos cada 3 h porque previenen eficazmente la recurrencia'],
+justificacion:'Múltiples ECA han demostrado que los antipiréticos no previenen la recurrencia de crisis febriles, y los efectos adversos de antiepilépticos superan el riesgo de un trastorno benigno.',
+referencia:'Corsello A, et al. Febrile Seizures: A Systematic Review of Different Guidelines. Ital J Pediatr 2022;48:115.'},
+
+{id:97,tema:'nlg',subtema:'Estado epiléptico: benzodiacepina no IV',
+escenario:'Preescolar femenino de 5 años 2 meses, 18 kg (p50), talla 110 cm (p50). Epilepsia focal estructural en tratamiento con oxcarbazepina (suspendida accidentalmente hace 4 días). Crisis tónico-clónica generalizada continua de 12 min sin recuperar conciencia (estado epiléptico convulsivo establecido). Vía aérea lateral, O₂, monitorización (FC 154, FR 26 irregular, SatO₂ 92%, TA 108/68), glucemia 94. Sin acceso venoso.',
+pregunta:'En fase inicial (min 5–20) sin acceso IV, ¿cuál es el tratamiento farmacológico de primera línea según NICE NG217?',
+opciones:['Benzodiacepina de acción rápida por vía NO intravenosa de inmediato: midazolam IM 0.2 mg/kg (3.6 mg, máx 10 mg) — o midazolam bucal/intranasal 0.2–0.3 mg/kg, o diazepam rectal 0.5 mg/kg — y pasar a lorazepam IV 0.1 mg/kg (1.8 mg, máx 4 mg) en cuanto se obtenga vía, si persiste >5 min (máx 2 dosis totales de benzodiacepina)','Esperar 15 min hasta canalizar vía venosa central antes de cualquier fármaco','Fenitoína IM 20 mg/kg en glúteo','Levetiracetam por SNG 20 mg/kg','Lidocaína IV bolo 2 mg/kg'],
+justificacion:'RAMPART demostró que midazolam IM es al menos tan eficaz y más rápido de administrar que lorazepam IV cuando no hay vía canalizada. Limitar a 2 dosis previene depresión respiratoria y internalización de receptores GABA-A.',
+referencia:'NICE NG217. Epilepsies in children, young people and adults, 2022 (actualizado 2023); Chamberlain JM, et al. Lancet 2020.'},
+
+{id:98,tema:'nlg',subtema:'Estado epiléptico: segunda línea (ESETT)',
+escenario:'La niña de 18 kg recibió midazolam IM y luego lorazepam 1.8 mg IV tras canalizar vena; al minuto 22 persiste con actividad tónico-clónica generalizada (estado epiléptico resistente a benzodiacepinas).',
+pregunta:'Según el ensayo ESETT (Lancet 2020), ¿cuál es el fármaco y dosis exacta de segunda línea indicado para esta niña de 18 kg?',
+opciones:['Levetiracetam IV en carga única de 60 mg/kg (1,080 mg, máx 4,500 mg) en 10 min (o fosfenitoína 20 mg PE/kg o valproato 40 mg/kg; ESETT demostró eficacia equivalente ~47–52% entre los tres, siendo levetiracetam preferido por perfil cardiovascular seguro y sin hepatotoxicidad/arritmias)','Fenitoína IV bolo rápido 5 mg/kg en 30 s','Tercera y cuarta dosis de lorazepam IV antes de segunda línea','Topiramato oral por SNG 5 mg/kg','Gabapentina IV 15 mg/kg'],
+justificacion:'ESETT (Lancet 2020) comparó dosis óptimas basadas en peso de levetiracetam (60 mg/kg), fosfenitoína (20 mg PE/kg) y valproato (40 mg/kg) en ≥2 años: eficacia equivalente (~50% cese clínico a 60 min) sin diferencias en eventos adversos graves.',
+referencia:'Chamberlain JM, Kapur J, Shinnar S, et al. ESETT trial. Lancet 2020;395:1217-1224.'},
+
+{id:99,tema:'nlg',subtema:'Estado epiléptico refractario',
+escenario:'A pesar de levetiracetam 60 mg/kg, al minuto 42 persisten sacudidas clónicas sutiles faciales y deterioro respiratorio (estado epiléptico refractario).',
+pregunta:'¿Cuál es el manejo en esta tercera fase (refractario, >30–40 min sin respuesta a benzodiacepina + segunda línea)?',
+opciones:['Ingreso inmediato a UCIP, intubación endotraqueal con soporte ventilatorio, monitorización con EEG continuo (para descartar estado epiléptico no convulsivo sutil tras cese motor) e inicio de infusión continua de anestésicos (midazolam, ketamina o pentobarbital/tiopental) hasta supresión de crisis electrográficas o patrón brote-supresión','Observación 6 h en sala general esperando cese espontáneo','Glucosa hipertónica 50% y alta si cede el movimiento visible','Cambiar a carbamazepina oral por SNG','Punción lumbar evacuadora sin asegurar vía aérea'],
+justificacion:'En el estado refractario existe alta incidencia de disociación electromecánica (persisten descargas cerebrales dañinas pese a cese motor); la cEEG en UCIP es indispensable.',
+referencia:'NICE NG217. Epilepsies in children, young people and adults, 2022 (actualizado 2023).'},
+
+{id:100,tema:'neo',subtema:'Crisis neonatal: clasificación ILAE 2021',
+escenario:'RN masculino a término de 39 SDG, 3.3 kg (p50), 50 cm (p50); DPPNI con asfixia perinatal grave (Apgar 2/4/5, pH cordón 6.94, déficit de base −18). En hipotermia terapéutica a 33.5 °C. A las 14 h de vida: 90 s de sacudidas clónicas rítmicas focales de miembro superior derecho y desviación conjugada de mirada a la derecha con desaturación. Glucemia 74, calcio iónico 1.18 mmol/L, magnesio 1.9 (normales).',
+pregunta:'Según el documento de posición ILAE Neonatal 2021, ¿qué característica fisiopatológica define las crisis neonatales y cuál es el método diagnóstico estándar de oro?',
+opciones:['La mayoría son agudas provocadas (encefalopatía hipóxico-isquémica es la causa #1) con marcada "disociación electroclínica" (hasta 80% son exclusivamente electrográficas sin correlato motor visible); el estándar de oro es el video-EEG continuo (cEEG) (o aEEG como tamizaje al pie de cama)','Todos los movimientos paroxísticos neonatales son epilépticos y deben tratarse sin confirmación eléctrica','TC de cráneo de urgencia como único estudio confirmatorio','Niveles séricos de amonio y lactato para confirmar actividad ictal','Punción lumbar antes de evaluar el trazado electroencefalográfico'],
+justificacion:'La clasificación ILAE Neonatal 2021 destaca que los neonatos no presentan crisis generalizadas primarias por mielinización incompleta y conectoma inmaduro, sino crisis de inicio focal o exclusivamente electrográficas.',
+referencia:'Pressler RM, Cilio MR, Mizrahi EM, et al. ILAE classification of seizures in the neonate. Epilepsia 2021;62:615-628.'},
+
+{id:101,tema:'neo',subtema:'Crisis neonatal: fenobarbital primera línea',
+escenario:'El video-EEG continuo del neonato de 3.3 kg confirma descargas rítmicas focales frontocentrales izquierdas evolutivas con carga ictal de 14 min en la última hora.',
+pregunta:'Según guías OMS y consenso internacional de neurología neonatal, ¿cuál es el fármaco y dosis de carga inicial de primera línea?',
+opciones:['Fenobarbital IV en carga inicial de 20 mg/kg (66 mg) lenta en 15–20 min, con bolos adicionales de 10 mg/kg hasta acumulado total 40 mg/kg si persisten crisis electrográficas, antes de escalar a segunda línea (levetiracetam o fenitoína/fosfenitoína)','Lorazepam IV 0.5 mg/kg en bolo único','Carbamazepina oral por SOG 15 mg/kg','Ácido valproico IV 40 mg/kg','Topiramato oral 10 mg/kg/día'],
+justificacion:'NEOLEV2 y guías actualizadas confirman que fenobarbital es significativamente más eficaz que levetiracetam como primera línea en neonatos (~80% vs ~28% de erradicación de crisis electrográficas a las 24 h).',
+referencia:'Sharpe C, Reiner GE, Davis SL, et al. NEOLEV2. Pediatrics 2020;145:e20193182; WHO Newborn Seizure Guidelines, 2023.'},
+
+{id:102,tema:'neo',subtema:'Crisis neonatal aguda: suspensión precoz de fenobarbital',
+escenario:'Tras carga de fenobarbital cesan por completo crisis clínicas y electrográficas. El neonato completa 72 h de hipotermia terapéutica y recalentamiento sin recurrencia por >5 días, con succión vigorosa.',
+pregunta:'Según el Neonatal Seizure Registry (JAMA Neurol 2021), ¿cuál es la conducta respecto a la continuación o suspensión del fenobarbital antes del alta en crisis agudas provocadas resueltas (EHI)?',
+opciones:['Suspender fenobarbital antes del alta una vez resueltas las crisis agudas (tras ≥48–72 h libres de crisis electrográficas): mantenerlo meses no previene epilepsia postneonatal y se asocia con apoptosis neuronal y peores desenlaces del neurodesarrollo','Mantener fenobarbital oral obligatorio hasta los 3 años en todos los neonatos','Sustituir por ácido valproico oral 24 meses al egreso','RM cerebral mensual durante el primer año antes de suspender','Continuar fenobarbital solo si el reflejo de Moro está presente al alta'],
+justificacion:'El Neonatal Seizure Registry (Glass et al., JAMA Neurol 2021) demostró que suspender la medicación anticrisis antes del alta en crisis neonatales agudas provocadas es seguro y no incrementa el riesgo de epilepsia a los 24 meses.',
+referencia:'Glass HC, Soul JS, Chang T, et al. Safety of Early Discontinuation of Antiseizure Medication After Acute Symptomatic Neonatal Seizures. JAMA Neurol 2021;78:817-825.'},
+
+{id:103,tema:'nef',subtema:'LRA KDIGO + hiperK grave: calcio',
+escenario:'Preescolar masculino de 4 años 3 meses, 16 kg (p50), talla 103 cm (p50); sano. Creatinina basal hace 2 meses: 0.35 mg/dL. 4 días de GEA con vómitos + múltiples dosis altas de ibuprofeno VO sin reposición. 18 h de oliguria (0.18 mL/kg/h), letargia y debilidad muscular. Cr 1.48 mg/dL (>4× basal), BUN 64, Na 132, K 7.2, Cl 96, HCO₃ 13, Ca 8.6. ECG: ondas T picudas simétricas de base estrecha, PR prolongado y QRS ensanchándose.',
+pregunta:'Según KDIGO pediátrico, ¿cómo se estadifica la LRA y cuál es la primera medida farmacológica inmediata ante hiperpotasemia grave con repercusión electrocardiográfica?',
+opciones:['LRA estadio 3 (Cr ≥3.0× basal [1.48/0.35 = 4.2×] y/o oliguria <0.3 mL/kg/h ≥24 h); gluconato de calcio al 10% IV a 0.5–1.0 mL/kg (50–100 mg/kg = 8–16 mL) lento en 5–10 min bajo monitorización ECG continua para antagonizar el efecto despolarizante del K sobre la membrana miocárdica y prevenir FV/asistolia','LRA estadio 1; poliestireno sulfonato cálcico VO como primera medida','LRA estadio 2; furosemida IV en bolo y observar 4 h','LRA prerrenal leve; salino 0.9% con 40 mEq/L KCl','ERC estadio 5; iniciar eritropoyetina SC'],
+justificacion:'El gluconato de calcio actúa en 1–3 min y dura 30–60 min, pero no reduce la concentración sérica de K, por lo que debe seguirse inmediatamente de medidas de redistribución y eliminación.',
+referencia:'Lameire NH, Levin A, Kellum JA, et al. KDIGO Consensus Conference on AKI/CKD. Kidney Int 2021;100:516-526; Starr MC, et al. Pediatrics 2021.'},
+
+{id:104,tema:'nef',subtema:'HiperK grave: shift intracelular',
+escenario:'Tras gluconato de calcio al 10% IV, el QRS se estrecha. Se suspende ibuprofeno y se inicia rehidratación cuidadosa con cristaloide balanceado libre de K.',
+pregunta:'¿Cuál es la combinación terapéutica más eficaz para promover el desplazamiento intracelular rápido del K mientras se prepara su eliminación renal o dialítica?',
+opciones:['Insulina regular IV (0.1 UI/kg = 1.6 UI) + glucosa IV (0.5 g/kg = 8 g, equivalente a 80 mL de glucosada 10% o 32 mL al 25%) para prevenir hipoglucemia, asociada a β2-agonista inhalado (salbutamol nebulizado 2.5–5 mg), reservando bicarbonato solo si acidosis metabólica grave y preparando terapia de reemplazo renal si persiste anuria e hiperK refractaria','Dexametasona IV + espironolactona oral','Manitol IV 20% como único agente','Propranolol IV lento 0.05 mg/kg','Cloruro de amonio oral para acidificar la orina'],
+justificacion:'Insulina y β2-agonistas estimulan sinérgicamente la bomba Na⁺/K⁺-ATPasa del músculo esquelético y hepatocitos, reduciendo el K sérico 0.5–1.2 mEq/L en 15–30 min. La glucosa concomitante es obligatoria en niños para evitar hipoglucemia grave.',
+referencia:'Starr MC, Charlton JR, Guillet R, et al. Advances in Neonatal and Pediatric AKI. Pediatrics 2021;148:e2021051220; KDIGO AKI Updates, 2021.'},
+
+{id:105,tema:'nef',subtema:'Seguimiento post-LRA grave',
+escenario:'Con expansión cuidadosa de volumen y manejo médico, el paciente restablece diuresis (1.8 mL/kg/h), K desciende a 4.5 y Cr regresa a 0.42 al sexto día, sin requerir diálisis.',
+pregunta:'Según KDIGO 2021 y guías pediátricas, ¿qué conducta de vigilancia a mediano/largo plazo es obligatoria tras el alta de una LRA estadio 2–3?',
+opciones:['Evaluación clínica y bioquímica estructurada a los 3 meses post-LRA (creatinina/TFGe, relación proteína o albúmina/creatinina urinaria y TA) con vigilancia periódica posterior: los sobrevivientes de LRA estadio 2–3 tienen mayor riesgo de HTA, proteinuria y ERC, además de evitar estrictamente fármacos nefrotóxicos (AINEs, aminoglucósidos)','Alta definitiva sin volver a medir creatinina ni TA','Ibuprofeno habitual para futuros cuadros febriles una vez normalizada la creatinina','Diuréticos de asa diarios durante 2 años','Biopsia renal percutánea protocolaria a los 6 meses en todos los recuperados'],
+justificacion:'KDIGO enfatiza el continuo LRA → enfermedad renal aguda (AKD, 7–90 días) → ERC (>90 días), haciendo obligatorio el control formal a los 3 meses tras cualquier LRA grave pediátrica.',
+referencia:'Lameire NH, Levin A, Kellum JA, et al. KDIGO Consensus Conference on AKI/CKD. Kidney Int 2021;100:516-526.'},
+
+{id:106,tema:'nef',subtema:'ERC pediátrica por CAKUT: estadificación',
+escenario:'Escolar masculino de 7 años 6 meses, 19.2 kg (p5), talla 110 cm (<p3, Z −2.5). Antecedente prenatal de oligohidramnios e hidronefrosis bilateral grave por valvas de uretra posterior resecadas neonatalmente, con displasia renal bilateral. Control semestral: Cr 1.85 estable >1 año, RAC 420 mg/g (A3), Hb 8.8 (normo-normo, ferritina 165, sat 28%), Ca 8.4, P 6.3, PTHi 235 pg/mL, 25-OH-vit D 16 ng/mL, HCO₃ 17.',
+pregunta:'Con Schwartz pediátrica (TFGe = 0.413 × talla/creatinina) y KDIGO 2024, ¿cuál es la TFGe, el estadio de ERC y la etiología líder de ERC en pediatría?',
+opciones:['TFGe 24.5 mL/min/1.73 m² (estadio G4 A3: disminución grave); causada por anomalías congénitas del riñón y del tracto urinario (CAKUT), principal causa (>45–50%) de ERC pediátrica (a diferencia del adulto, donde predominan diabetes e HTA)','TFGe 62.0 mL/min/1.73 m² (G2); causada por nefropatía diabética','TFGe 11.2 mL/min/1.73 m² (G5); causada por GEFS primaria','TFGe 44.0 mL/min/1.73 m² (G3b); causada por poliquistosis autosómica dominante','TFGe 88.0 mL/min/1.73 m² (G1); función renal normal para su edad'],
+justificacion:'Cálculo: TFGe = 0.413 × 110/1.85 = 24.55 mL/min/1.73 m² (rango G4: 15–29). KDIGO 2024 también recomienda las ecuaciones pediátricas CKiD U25 basadas en creatinina y/o cistatina C para mayor precisión.',
+referencia:'KDIGO CKD Work Group. KDIGO 2024 Clinical Practice Guideline for the Evaluation and Management of CKD. Kidney Int 2024;105:S117-S314.'},
+
+{id:107,tema:'nef',subtema:'ERC pediátrica: acidosis y ERC-TMO',
+escenario:'El escolar de 7 años con ERC G4 A3 por CAKUT iniciará IECA/ARA-II para nefroprotección antiproteinúrica y control estricto de TA (<p50–75 KDIGO 2024/ensayo ESCAPE); además debe corregirse su perfil metabólico (HCO₃ 17, P 6.3, PTHi 235).',
+pregunta:'Según KDIGO 2024, ¿cuál es la conducta para la acidosis metabólica crónica y el trastorno mineral-óseo (ERC-TMO) en niños?',
+opciones:['Corregir la acidosis con bicarbonato de sodio (o citrato) oral para mantener HCO₃ ≥22 mEq/L (evita catabolismo proteico, desmineralización ósea y resistencia a GH) y tratar el hiperparatiroidismo secundario con restricción dietética moderada de fósforo, quelantes (carbonato de calcio o sevelámero), vitamina D nativa (colecalciferol) y análogos activos (calcitriol)','Restringir el calcio dietético a cero y dar corticoides orales para reducir PTH','Mantener HCO₃ en 16 mEq/L sin suplementos porque protege contra calcificación vascular','Fósforo oral suplementario + furosemida en dosis altas','Paratiroidectomía subtotal inmediata antes de tratamiento médico'],
+justificacion:'En niños en crecimiento, el control meticuloso de la acidosis y la ERC-TMO previene las deformidades óseas del raquitismo renal y favorece el crecimiento lineal.',
+referencia:'KDIGO CKD Work Group. KDIGO 2024 Clinical Practice Guideline. Kidney Int 2024;105:S117-S314.'},
+
+{id:108,tema:'nef',subtema:'ERC pediátrica: talla baja y anemia',
+escenario:'El escolar de 7 años con ERC G4 corrige acidosis (HCO₃ 23), optimiza nutrición calórico-proteica y controla hiperparatiroidismo; a los 6 meses persiste talla −2.6 DE, velocidad 3.4 cm/año y anemia renal sintomática (Hb 8.7 con depósitos de hierro repletos).',
+pregunta:'Según KDIGO 2024, ¿cuál es el manejo específico de la talla baja refractaria y la anemia asociada a ERC en este niño?',
+opciones:['Iniciar hormona de crecimiento humana recombinante (rhGH) SC (aprobada en ERC G3a–G5 con talla <p3 o velocidad <p25 una vez corregidos nutrición, acidosis y ERC-TMO) e iniciar agente estimulante de eritropoyesis (epoetina alfa o darbepoetina) con meta de Hb 10.0–12.0 g/dL (evitando >12–13 g/dL por riesgo cardiovascular)','Hierro IV en dosis máximas ignorando que ferritina y saturación son normales, y esperar al trasplante renal para talla baja','Transfundir concentrado eritrocitario cada 3 semanas hasta Hb 14.5','Testosterona IM para acelerar cierre epifisario','Dieta estrictamente hipoproteica (<0.4 g/kg/día) para frenar progresión renal'],
+justificacion:'El uso oportuno de rhGH permite recuperar potencial de talla adulta antes del cierre epifisario puberal. Evitar transfusiones innecesarias previene sensibilización HLA de cara a trasplante renal anticipado.',
+referencia:'KDIGO CKD Work Group. KDIGO 2024 Clinical Practice Guideline. Kidney Int 2024;105:S117-S314.'},
+
+{id:109,tema:'nef',subtema:'Síndrome nefrótico idiopático: diagnóstico y primera línea',
+escenario:'Preescolar femenino de 5 años 1 mes, 18 kg habitual (21.2 kg actual, +3.2 kg por edema), talla 109 cm (p50); sana, vacunas completas. 6 días de edema palpebral matutino → anasarca (periorbitario bilateral, ascitis moderada, fóvea +++ en miembros inferiores), orina espumosa y oliguria. TA 94/58, sin hematuria macroscópica. Proteína/creatinina urinaria 7.4 mg/mg (>2.0 nefrótico), albúmina 1.5 g/dL, colesterol 355, triglicéridos 290, C3/C4 normales, ANA negativos, Cr 0.38.',
+pregunta:'Con edad típica (1–12 años), ausencia de signos nefríticos y criterios bioquímicos de SN idiopático, ¿cuál es el diagnóstico histopatológico más probable y el tratamiento de primera línea según IPNA 2023/KDIGO 2021?',
+opciones:['Síndrome nefrótico idiopático corticosensible (enfermedad de cambios mínimos en >80–85%); tratamiento empírico SIN biopsia renal previa con prednisona VO 60 mg/m²/día o 2 mg/kg/día (36 mg/día calculados sobre peso seco habitual de 18 kg, máx 60 mg/día) × 4–6 semanas, luego 4–6 semanas en días alternos (40 mg/m² o 1.5 mg/kg; total 8–12 semanas)','Nefropatía membranosa; biopsia renal percutánea inmediata antes de fármacos','GEFS corticorresistente; ciclosporina VO como primera línea','Glomerulonefritis postestreptocócica; solo furosemida + dieta sin sal','Amiloidosis renal secundaria; colchicina oral'],
+justificacion:'En pediatría, la respuesta clínica a corticoides tiene mayor valor pronóstico que la histología inicial. La biopsia renal se reserva para edad <1 año o >12 años, hipocomplementemia, hematuria macroscópica o corticorresistencia.',
+referencia:'Trautmann A, Boyer O, Hodson E, et al. IPNA recommendations for steroid-sensitive nephrotic syndrome. Pediatr Nephrol 2023;38:877-919; KDIGO 2021 Glomerular Diseases.'},
+
+{id:110,tema:'nef',subtema:'SN + LRA por hipovolemia ("underfill")',
+escenario:'Al segundo día del ingreso, tras dos dosis altas de furosemida IV para movilizar el edema, la niña de 5 años desarrolla dolor abdominal cólico, taquicardia 146, extremidades frías, llenado 3.5 s, TA 78/46, oliguria (0.2 mL/kg/h) y Cr sube de 0.38 a 1.15 mg/dL (LRA estadio 3) con hemoconcentración.',
+pregunta:'¿Cuál es el mecanismo fisiopatológico y el tratamiento de emergencia para restaurar la perfusión renal sin agravar el edema pulmonar?',
+opciones:['LRA prerrenal por hipovolemia intravascular grave ("underfill") por presión oncótica críticamente baja (albúmina 1.5) agravada por diuréticos; suspender diuréticos aislados e infundir albúmina humana pobre en sal al 20% a 0.5–1.0 g/kg (9–18 g) IV lento en 2–4 h (expande selectivamente el espacio intravascular) + furosemida IV (1–2 mg/kg) solo al finalizar la albúmina una vez restaurada la estabilidad hemodinámica','Trombosis bilateral de arterias renales; alteplasa IV bolo','Nefritis intersticial aguda por prednisona; suspender inmediatamente los corticoides','Obstrucción urinaria baja; talla suprapúbica de urgencia','Crisis hipertensiva maligna; nitroprusiato IV'],
+justificacion:'El uso agresivo de diuréticos en un nefrótico con hipovolemia intravascular precipita choque hipovolémico, LRA isquémica y trombosis venosa renal/cerebral por hemoconcentración.',
+referencia:'Trautmann A, et al. IPNA recommendations for steroid-sensitive nephrotic syndrome. Pediatr Nephrol 2023;38:877-919.'},
+
+{id:111,tema:'nef',subtema:'SN: profilaxis infecciosa y vacunación',
+escenario:'La paciente de 5 años con SN recupera perfusión renal (Cr 0.36) tras albúmina y entra en remisión completa (proteinuria negativa 3 días consecutivos) al día 10 de prednisona oral.',
+pregunta:'Considerando la inmunosupresión humoral (pérdida urinaria de IgG y factores B/D del complemento) y farmacológica, ¿qué medida preventiva infecciosa es fundamental según IPNA 2023 y AAP 2024?',
+opciones:['Administrar vacuna antineumocócica conjugada (PCV13/15/20) y PPSV23 más influenza inactivada anual, posponiendo virus vivos atenuados (SRP, varicela) hasta ≥1 mes tras suspender prednisona en dosis altas (≥2 mg/kg/día por ≥14 días), y educar a los padres para acudir de urgencia ante fiebre o dolor abdominal (riesgo de peritonitis bacteriana espontánea por S. pneumoniae o E. coli)','Contraindicar todas las vacunas inactivadas durante los siguientes 5 años','Aplicar SRP y varicela inmediatamente mientras toma prednisona a 2 mg/kg/día','Amoxicilina profiláctica diaria de por vida aunque esté en remisión sin edema','Gammagrafía V/Q cada 3 meses'],
+justificacion:'La pérdida urinaria de opsoninas (factor B e IgG) expone a los nefróticos a infecciones invasivas fulminantes por bacterias encapsuladas (S. pneumoniae), haciendo esencial la vacunación antineumocócica completa.',
+referencia:'Trautmann A, et al. IPNA recommendations for steroid-sensitive nephrotic syndrome. Pediatr Nephrol 2023;38:877-919; AAP Red Book 2024–2027.'}, {id:29,tema:'ped',subtema:'Crup: tiempo de observación post-adrenalina',
+escenario:'Preescolar masculino de 22 meses, 12 kg (p50), talla 85 cm (p50); vacunas completas. Acude a urgencias por 24 h de rinorrea y febrícula 37.8 °C, con tos perruna, disfonía y estridor inspiratorio de 2 h de evolución. Al examen: ansioso, estridor en reposo, tiraje supraesternal e intercostal moderado, buena entrada de aire bilateral. FC 134, FR 36, SatO₂ 95%, T 37.7 °C (Westley 4–5 puntos). Se administró dexametasona 7.2 mg VO + L-adrenalina nebulizada. A los 30 min: tranquilo, sin estridor en reposo (leve al llorar), tiraje disminuido, SatO₂ 97%.',
+pregunta:'Considerando la farmacocinética de los fármacos administrados, ¿cuál es el tiempo mínimo de observación en urgencias antes de un egreso domiciliario seguro?',
+opciones:['Observar 2 a 4 h tras la nebulización con adrenalina para vigilar el efecto de rebote del edema subglótico, antes de que la dexametasona alcance su efecto antiinflamatorio pleno','Alta inmediata a los 20 minutos tras terminar la nebulización','Hospitalización obligatoria por 72 h con adrenalina nebulizada cada 4 h','Egreso a los 30 minutos con prescripción de adrenalina nebulizada para uso domiciliario','Observación de 24 h con antibiótico profiláctico'],
+justificacion:'La adrenalina inicia en 10–30 min y dura ~2 h, mientras que la dexametasona tarda 2–4 h en alcanzar efecto antiinflamatorio pleno. Sin ventana de observación se pierde la recurrencia del edema subglótico cuando cede la vasoconstricción.',
+referencia:'Canadian Paediatric Society. Acute management of croup in the emergency department. Paediatr Child Health 2021 (reafirmado 2023).'},
+
+{id:30,tema:'ped',subtema:'Crup: indicaciones al alta',
+escenario:'El mismo preescolar de 22 meses permanece estable durante 3.5 h de observación tras dexametasona + adrenalina: sin estridor en reposo, tolera líquidos, SatO₂ 97%, FC 118, FR 28. Se prepara el alta hospitalaria; los padres preguntan qué cuidados seguir en casa y cuándo regresar.',
+pregunta:'¿Qué indicaciones domiciliarias y signos de alarma deben explicarse antes del alta?',
+opciones:['Hidratación oral, control térmico con paracetamol o ibuprofeno, evitar humo de tabaco, NO antibióticos ni antitusígenos; regresar de inmediato si reaparece estridor en reposo, tiraje costal, cianosis, babeo continuo o somnolencia excesiva','Dexametasona oral cada 8 h por 5 días y vaporizadores de vapor caliente directo frente al rostro','Amoxicilina por 7 días y jarabe con dextrometorfano por las noches','Nebulizaciones con salbutamol cada 6 h en casa por 3 días','Ayuno de líquidos por 12 h para evitar edema laríngeo'],
+justificacion:'Una dosis única de dexametasona tiene vida media biológica de 36–72 h, tiempo en que suele resolverse el cuadro viral. No requiere dosis repetidas, antibióticos ni vapor caliente (riesgo de quemaduras). Los signos de alarma permiten identificar la progresión a obstrucción grave.',
+referencia:'NICE Clinical Knowledge Summaries: Croup – Management, 2023.'},
+
+{id:31,tema:'neu',subtema:'NAC: duración óptima del antibiótico',
+escenario:'Preescolar femenino de 3 años 2 meses, 14.5 kg (p50), talla 95 cm (p50); vacunas completas. NAC no complicada con diagnóstico clínico; se inició amoxicilina VO 90 mg/kg/día cada 12 h (652 mg por toma). A las 48 h: afebril, apetito recuperado, FR 28 rpm. La madre pregunta cuántos días continuar el antibiótico.',
+pregunta:'De acuerdo con los ensayos clínicos SAFER y SCOUT-CAP y las guías vigentes, ¿cuál es la duración óptima del tratamiento oral para una NAC pediátrica no complicada con buena respuesta clínica?',
+opciones:['5 días de antibiótico: cursos cortos han demostrado no inferioridad clínica con menor impacto en resistencia antimicrobiana y efectos adversos gastrointestinales','14 días obligatorios para erradicar el estado de portador nasofaríngeo','Suspender el antibiótico inmediatamente al cumplir 48 h sin fiebre','21 días consecutivos para evitar recaída','10 días IV seguidos de 10 días orales'],
+justificacion:'Los ensayos SAFER (2021) y SCOUT-CAP (2022) demostraron no inferioridad del esquema corto de 5 días frente a 10 días en NAC pediátrica no complicada con buena respuesta, con menor presión selectiva y menos diarrea asociada a antibióticos.',
+referencia:'Pernica JM, et al. SAFER RCT. JAMA Pediatr 2021;175:475-482; Williams DJ, et al. SCOUT-CAP RCT. JAMA Pediatr 2022;176:253-261; NICE NG138 (2023).'},
+
+{id:32,tema:'neu',subtema:'NAC complicada: empiema',
+escenario:'La misma preescolar de 3 años con NAC, ahora a las 72 h de amoxicilina: en lugar de mejorar, persiste con fiebre en picos de 39.5 °C, dolor pleurítico derecho, taquipnea 52 rpm, abolición del murmullo vesicular y matidez a la percusión en los dos tercios inferiores del hemitórax derecho.',
+pregunta:'¿Qué complicación supurativa debe sospecharse y cuál es el estudio de imagen de elección para caracterizar el líquido, detectar tabicaciones y guiar el drenaje?',
+opciones:['Derrame pleural paraneumónico / empiema; radiografía de tórax seguida de ultrasonido torácico (cuantifica volumen, identifica septos sin radiación y guía toracocentesis o sonda pleural)','Neumotórax espontáneo primario; resonancia magnética de tórax','Absceso subfrénico amebiano; gammagrafía hepatoesplénica','Bronquiolitis obliterante; espirometría forzada','Quilotórax congénito; linfangiografía con contraste'],
+justificacion:'La falta de defervescencia a las 48–72 h de antibiótico adecuado obliga a descartar derrame paraneumónico o empiema. El ultrasonido torácico es superior a la radiografía simple para diferenciar consolidación de líquido y detectar fibrina/tabicaciones que condicionan el drenaje.',
+referencia:'Florin TA, et al. Community-Acquired Pneumonia in Children. NEJM Clinical Practice 2021-2023.'},
+
+{id:33,tema:'inf',subtema:'NAC por Mycoplasma pneumoniae',
+escenario:'Adolescente masculino de 14 años 6 meses, 54 kg (p50), talla 165 cm (p50), previamente sano. 7 días de cefalea, odinofagia, malestar y febrícula 37.9 °C, con tos seca paroxística intensa y disnea progresiva en las últimas 24 h. Taquipnea 28 rpm, crepitantes finos diseminados y escasas sibilancias bilaterales. FC 112, SatO₂ 89%, T 38.1 °C. Radiografía: infiltrados intersticiales y reticulonodulares perihiliares bilaterales en lóbulos inferiores.',
+pregunta:'Con la edad, el curso subagudo con pródromo extrapulmonar, el patrón intersticial y la hipoxemia, ¿cuál es el agente más probable y la conducta respecto al sitio de atención?',
+opciones:['Mycoplasma pneumoniae; hospitalizar para oxigenoterapia suplementaria (SatO₂ <90–92% es criterio absoluto de ingreso) e iniciar cobertura contra patógenos atípicos','Streptococcus agalactiae; manejo ambulatorio con penicilina benzatínica IM','Virus sincitial respiratorio; alta domiciliaria con oseltamivir oral','Bordetella pertussis; aislamiento estricto y amoxicilina oral ambulatoria','Staphylococcus aureus resistente a meticilina; manejo ambulatorio con cefalexina'],
+justificacion:'En escolares y adolescentes, Mycoplasma pneumoniae es causa líder de NAC con inicio gradual, cefalea/mialgias, tos seca persistente e infiltrados intersticiales. La hipoxemia (SatO₂ <90–92%) al aire ambiente es criterio de hospitalización inmediata.',
+referencia:'Meyer Sauteur PM, Beeton ML; ESGMAC. Lancet Microbe 2024;5:e100-e101; NICE NG138 (actualizado 2023).'},
+
+{id:34,tema:'inf',subtema:'Mycoplasma: elección de antibiótico',
+escenario:'El adolescente de 14 años (54 kg) con NAC se ingresa con O₂ por puntas nasales a 2 L/min (SatO₂ 96%). El panel respiratorio por PCR múltiple confirma infección aguda por Mycoplasma pneumoniae. No hay derrame, buena tolerancia oral.',
+pregunta:'Considerando que Mycoplasma carece de pared celular, ¿cuál es el esquema antibiótico de primera línea?',
+opciones:['Azitromicina VO 10 mg/kg día 1 (máx 500 mg), seguida de 5 mg/kg/día (máx 250 mg) días 2–5 (o doxiciclina 100 mg cada 12 h en ≥8 años si se sospecha resistencia a macrólidos)','Amoxicilina-ácido clavulánico 875/125 mg cada 12 h por 10 días','Ceftriaxona 2 g IV cada 24 h por 7 días','Vancomicina 15 mg/kg IV cada 8 h','Cefuroxima axetilo 500 mg cada 12 h por 7 días'],
+justificacion:'Sin pared de peptidoglucano, los betalactámicos y glucopéptidos son ineficaces. Los macrólidos o tetraciclinas (doxiciclina es segura en ≥8 años) inhiben la síntesis proteica ribosómica y constituyen el tratamiento de elección.',
+referencia:'NICE NG138 (actualizado 2023); PIDS/IDSA Guidelines 2020-2024.'},
+
+{id:35,tema:'inf',subtema:'MIRM/RIME por Mycoplasma',
+escenario:'El adolescente con Mycoplasma pneumoniae, al quinto día de evolución, desarrolla ulceraciones hemorrágicas dolorosas en labios y mucosa oral, conjuntivitis purulenta bilateral, uretritis y escasas lesiones vesiculoampollosas en diana ("targetoides") dispersas en tronco (<5% de superficie corporal).',
+pregunta:'¿A qué entidad clínica mucocutánea asociada a Mycoplasma pneumoniae corresponde este cuadro?',
+opciones:['MIRM/RIME (exantema y mucositis inducidos por Mycoplasma): compromiso mucoso prominente (≥2 sitios) con afectación cutánea escasa y mejor pronóstico que el Stevens-Johnson clásico por fármacos','Síndrome de piel escaldada estafilocócica (SSSS)','Púrpura de Henoch-Schönlein (vasculitis por IgA)','Enfermedad de Kawasaki incompleta','Escarlatina estreptocócica'],
+justificacion:'El MIRM (hoy englobado dentro de RIME) es una complicación extrapulmonar clásica: predominio mucoso sobre cutáneo, mejor pronóstico que el SJS farmacológico. Requiere soporte hídrico/nutricional, cuidado oftalmológico y de mucosas y, ocasionalmente, corticoides o IGIV.',
+referencia:'Ramien ML, Bruckner AL. Mucocutaneous Eruptions in Acutely Ill Pediatric Patients. JAMA Dermatol 2020;156:124-125.'},
+
+{id:36,tema:'neu',subtema:'Bronquiolitis: diagnóstico y manejo inicial',
+escenario:'Lactante masculino de 4 meses 10 días, 6.5 kg (p50), talla 63 cm; 38 SDG, LME, vacunas al día. Temporada invernal: 48 h de rinorrea hialina y tos seca, con 8 h de dificultad respiratoria progresiva y rechazo alimentario (<50% de lo habitual). FR 62, aleteo nasal, tiraje subcostal e intercostal moderado, espiración prolongada, sibilancias diseminadas y crepitantes finos bilaterales. FC 156, SatO₂ 89%, T 37.6 °C.',
+pregunta:'Ante el primer episodio de dificultad respiratoria con sibilancias y crepitantes precedido de pródromo viral en menor de 12–24 meses, ¿cuál es el diagnóstico y el manejo inicial?',
+opciones:['Bronquiolitis viral (VSR); hospitalizar por hipoxemia y baja ingesta, O₂ para SatO₂ ≥90–92%, lavado nasal con solución salina e hidratación (SNG o IV), sin radiografía ni laboratorios de rutina','Asma del lactante; realizar radiografía, biometría y nebulizar salbutamol cada 20 min','Neumonía bacteriana lobar; iniciar cefotaxima IV y hemocultivos','Laringotraqueítis viral; dexametasona oral y adrenalina nebulizada','Insuficiencia cardíaca congestiva; furosemida y digoxina IV'],
+justificacion:'El diagnóstico de bronquiolitis es clínico. Los pilares son oxígeno, hidratación y desobstrucción nasal. La radiografía de rutina aumenta el uso innecesario de antibióticos al confundir atelectasias subsegmentarias con consolidación.',
+referencia:'Dalziel SR, et al. Bronchiolitis. Lancet 2022;400:392-406; NICE NG9 (actualizado 2021).'},
+
+{id:37,tema:'neu',subtema:'Bronquiolitis grave: cánula nasal de alto flujo',
+escenario:'El lactante de 4 meses con bronquiolitis ingresó con O₂ por cánula nasal 2 L/min e hidratación por SNG. A las 12 h empeora: FR 72, tiraje universal marcado, episodios de agotamiento, SatO₂ 86% a pesar de O₂ convencional, gasometría capilar pH 7.27 y PaCO₂ 55 mmHg.',
+pregunta:'¿Cuál es la modalidad de soporte respiratorio no invasivo escalonado de elección antes de la intubación?',
+opciones:['Cánula nasal de alto flujo (CNAF/HFNC) calentada y humidificada a 1–2 L/kg/min (7–13 L/min) o CPAP nasal: lavan el espacio muerto nasofaríngeo, reducen la resistencia inspiratoria y generan presión positiva distensora leve','Nebulización continua con salbutamol al 100%','Mascarilla facial simple a 15 L/min con aire frío y seco','Ventilación oscilatoria de alta frecuencia inmediata','Aminofilina IV en bolo'],
+justificacion:'La CNAF es el tratamiento de rescate estándar en bronquiolitis grave que fracasa a la oxigenoterapia de bajo flujo; reduce la necesidad de escalar a cuidados intensivos e intubación.',
+referencia:'Dalziel SR, et al. Bronchiolitis. Lancet 2022;400:392-406.'},
+
+{id:38,tema:'neu',subtema:'Asma: sulfato de magnesio',
+escenario:'Escolar masculino de 7 años 4 meses, 24 kg (p50), talla 123 cm; dermatitis atópica y asma desde los 5 años, solo con salbutamol a demanda. Crisis actual: agitado, sentado hacia adelante, frases entrecortadas, tiraje supraesternal e intercostal marcado, sibilancias espiratorias e inspiratorias audibles. FC 138, FR 38, SatO₂ 90%, PEF 54%. Tras primera hora con O₂, salbutamol con aerocámara cada 20 min, ipratropio y prednisolona oral 40 mg: persiste disnea intensa, retracciones supraclaviculares, murmullo vesicular disminuido, SatO₂ 89% con O₂, PEF 46%.',
+pregunta:'Ante la falta de respuesta al manejo inicial, ¿qué fármaco IV de segunda línea recomienda GINA para reducir la necesidad de ventilación mecánica?',
+opciones:['Sulfato de magnesio IV en dosis única de 40–50 mg/kg (960–1,200 mg, máximo 2 g) infundido en 20–30 min: relaja el músculo liso bronquial al inhibir el influjo de calcio','Furosemida IV 1 mg/kg','Bicarbonato de sodio IV 2 mEq/kg','Hidrocortisona en infusión continua 50 mg/kg/h','Propranolol IV lento 0.05 mg/kg'],
+justificacion:'GINA respalda una infusión única de sulfato de magnesio IV en niños ≥2 años con exacerbación grave que no responde al broncodilatador inicial y presenta hipoxemia persistente.',
+referencia:'GINA. Global Strategy for Asthma Management and Prevention, 2024 (actualización 2025).'}
+];
+
+/* ============ ESTADO Y GUARDADO ============ */
+const K='panel-enarm-v1';
+const blank=()=>({sesiones:[],casos:{},leidos:{},resumenes:[],ankis:[]});
+let S=blank();
+try{const r=localStorage.getItem(K);if(r)S=Object.assign(blank(),JSON.parse(r))}catch(e){}
+let dbDoc=null,tk=null;
+function save(){
+ try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}
+ if(dbDoc){clearTimeout(tk);tk=setTimeout(()=>dbDoc.set(JSON.parse(JSON.stringify(S))).catch(()=>{}),600)}
+}
+(async()=>{try{
+ const [db,user]=await Promise.all([claude.use('db'),claude.use('user')]);
+ if(!db||!user)return;
+ const id=await user.id();dbDoc=db.collection('data/users/'+id).doc('estado');
+ const snap=await dbDoc.get();
+ if(snap.exists){S=Object.assign(blank(),snap.data());try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}render()}
+ else if(S.sesiones.length||S.resumenes.length||S.ankis.length)save();
+}catch(e){}})();
+
+/* ============ UTILIDADES ============ */
+const $=id=>document.getElementById(id);
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const mezclar=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const nomTema=id=>(TEMAS.find(t=>t.id===id)||{}).nombre||id;
+const byId=id=>BANCO_CASOS.find(c=>c.id==id);
+const fecha=t=>new Date(t).toLocaleDateString('es-MX',{day:'numeric',month:'short'});
+function toast(m){const d=document.createElement('div');d.className='toast';d.textContent=m;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+const pesoDif=d=>d==='dificil'?2:d==='intermedio'?1:0;
+
+/* Errores pendientes: último intento fallado. Prioridad por subtema = suma de (3 + dificultad percibida) */
+const pendientes=()=>Object.entries(S.casos).filter(([id,c])=>c.pend&&byId(id)).map(([id,c])=>({id:+id,...c}));
+function prioridad(){
+ const m={};
+ pendientes().forEach(c=>{const x=m[c.sub]||(m[c.sub]={sub:c.sub,p:0,n:0,tema:c.tema,ids:[]});x.p+=3+pesoDif(c.dif);x.n++;x.ids.push(c.id)});
+ return Object.values(m).sort((a,b)=>(!!S.leidos[a.sub]-!!S.leidos[b.sub])||b.p-a.p);
+}
+const etiqueta=p=>p>=6?['🔴','Prioritario']:p>=3?['🟠','Repasar']:['🟡','Reforzar'];
+const colorP=p=>p>=6?'var(--bad)':p>=3?'var(--amb)':'#C9B13A';
+
+/* ============ NAVEGACIÓN ============ */
+const VIEWS=[['inicio','🏠','Inicio'],['sim','🧪','Simuladores'],['errores','❌','Mis errores'],['leer','📖','Qué leer'],['bib','📚','Biblioteca'],['anki','🗂️','Anki']];
+let cur='inicio';
+function go(v){cur=v;render();scrollTo(0,0)}
+function render(){
+ const np=pendientes().length;
+ $('nav').innerHTML='<div class="brand">Panel ENARM</div>'+VIEWS.map(([id,ic,n])=>`<a class="${id===cur?'on':''}" onclick="go('${id}')" tabindex="0" role="button" onkeydown="if(event.key==='Enter')go('${id}')"><i>${ic}</i>${n}${id==='errores'&&np?`<b>${np}</b>`:''}</a>`).join('');
+ const f={inicio:vInicio,sim:vSim,errores:vErrores,leer:vLeer,bib:vBib,anki:vAnki}[cur];
+ $('main').innerHTML=f();
+ if(cur==='bib')filtrarBib();
+}
+
+/* ============ INICIO ============ */
+function vInicio(){
+ const R=Object.values(S.casos),resp=R.reduce((a,c)=>a+c.ok+c.mal,0),ok=R.reduce((a,c)=>a+c.ok,0);
+ const pr=prioridad(),ult=S.sesiones.slice(-8);
+ let h=`<h1>Hola, Barzilai</h1><p class="sub">Tu espacio de estudio para el ENARM.</p>
+ <div class="card"><div class="stats"><div><b>${resp?Math.round(ok/resp*100)+'%':'—'}</b>aciertos en total</div><div><b>${resp}</b>respuestas</div><div><b>${pendientes().length}</b>errores por repasar</div><div><b>${S.sesiones.length}</b>sesiones</div></div></div>
+ <h2>Qué leer ahora</h2>`;
+ if(!pr.length)h+=`<div class="card empty">Aún no hay errores guardados. Haz una simulación y aquí aparecerán los temas que debes leer.<br><br><button class="btn" onclick="go('sim')">Ir a simuladores</button></div>`;
+ else{h+='<div class="card">'+pr.slice(0,6).map(x=>`<div class="hm"><span>${esc(x.sub)}${S.leidos[x.sub]?' <span class="mut">(leído)</span>':''}</span><span class="tr"><i style="width:${Math.min(100,x.p*9)}%;background:${colorP(x.p)}"></i></span><span class="mut ui" style="min-width:24px;text-align:right">${x.n}</span></div>`).join('')+`<button class="ghost sm" onclick="go('leer')">Ver plan completo</button></div>`}
+ if(ult.length)h+=`<h2>Tus últimas sesiones</h2><div class="card"><div class="chart">${ult.map(s=>`<div style="height:${Math.max(4,s.pct)}%" title="${fecha(s.t)}: ${s.ok}/${s.n}"><small>${s.pct}</small></div>`).join('')}</div><div class="mut ui" style="font-size:13px;margin-top:6px">Porcentaje de aciertos por sesión, de la más antigua a la más reciente</div></div>`;
+ h+=`<h2>Accesos</h2><div class="grid"><div class="card"><b class="ui">Simulador de Pediatría</b><p class="mut">${BANCO_CASOS.length} casos clínicos</p><button class="btn" onclick="go('sim')">Practicar</button></div><div class="card"><b class="ui">Biblioteca</b><p class="mut">${S.resumenes.length} resúmenes guardados</p><button class="ghost" onclick="go('bib')">Abrir</button></div><div class="card"><b class="ui">Tarjetas Anki</b><p class="mut">${S.ankis.length} tarjetas</p><button class="ghost" onclick="go('anki')">Abrir</button></div></div>`;
+ return h;
+}
+
+/* ============ SIMULADOR ============ */
+let sim={fase:'lista'},cfg={tema:'',n:0};
+function vSim(){
+ if(sim.fase==='lista')return `<h1>Simuladores</h1><p class="sub">Elige uno para comenzar. Tus errores se guardan solos.</p>
+ <div class="grid"><div class="card"><b class="ui" style="font-size:19px">Pediatría</b><p class="mut">${BANCO_CASOS.length} casos · retroalimentación inmediata</p><button class="btn" onclick="sim.fase='cfg';render()">Configurar sesión</button></div>
+ <div class="card mut"><b class="ui" style="font-size:19px">Más especialidades</b><p>Cuando tengas otro simulador, se agrega aquí como una tarjeta nueva.</p></div></div>`;
+ if(sim.fase==='cfg'){
+  const np=pendientes().length,d=cfg.tema==='errores'?np:cfg.tema?poolDe(cfg.tema).length:0;
+  return `<h1>Configura tu sesión</h1><p class="sub">Pediatría</p>
+  <label>Tema</label><select onchange="cfg.tema=this.value;render()"><option value="" disabled ${cfg.tema?'':'selected'}>Elige un tema</option>
+  <option value="errores" ${cfg.tema==='errores'?'selected':''} ${np?'':'disabled'}>🔁 Repasar solo mis errores (${np})</option>
+  ${TEMAS.map(t=>`<option value="${t.id}" ${t.activo?'':'disabled'} ${cfg.tema===t.id?'selected':''}>${esc(t.nombre)}${t.activo?' — '+poolDe(t.id).length+' casos':' (próximamente)'}</option>`).join('')}</select>
+  <label>Cantidad de casos</label><div class="pills">${[3,5,10,9999].map(n=>`<button class="pill ${cfg.n===n?'sel':''}" onclick="cfg.n=${n};render()">${n===9999?'Todos':n}</button>`).join('')}</div>
+  <p class="mut" style="font-size:14px">${cfg.tema?`Disponibles: ${d}.`:''}</p>
+  <div class="row"><button class="btn" ${cfg.tema&&cfg.n&&d?'':'disabled'} onclick="iniciar()">Iniciar simulación</button><button class="ghost" onclick="sim.fase='lista';render()">Volver</button></div>`;
+ }
+ if(sim.fase==='play')return playHTML();
+ return resHTML();
+}
+const poolDe=t=>t==='errores'?pendientes().map(c=>byId(c.id)):BANCO_CASOS.filter(c=>t==='todos'||c.tema===t);
+function iniciar(){
+ const casos=mezclar(poolDe(cfg.tema)).slice(0,cfg.n);
+ sim={fase:'play',casos,i:0,resp:[],opts:null,ans:null,dif:null,tema:cfg.tema};nuevoCaso();render();scrollTo(0,0);
+}
+function nuevoCaso(){const c=sim.casos[sim.i];sim.opts=mezclar(c.opciones.map((t,k)=>({t,ok:k===0})));sim.ans=null;sim.dif=null}
+function playHTML(){
+ const c=sim.casos[sim.i],N=sim.casos.length,L='ABCDE',ci=sim.opts.findIndex(o=>o.ok),a=sim.ans;
+ let h=`<div class="row sp"><b class="ui">Caso ${sim.i+1} de ${N}</b><button class="ghost sm" style="border-color:var(--bad);color:var(--bad)" onclick="terminar()">Terminar simulación</button></div><div class="bar"><i style="width:${(sim.i+1)/N*100}%"></i></div>
+ <div class="card"><span class="tag">${esc(nomTema(c.tema))} · ${esc(c.subtema)}</span><div class="esc">${esc(c.escenario)}</div><div class="q">${esc(c.pregunta)}</div>
+ ${sim.opts.map((o,k)=>`<button class="opt ${a!==null?(k===a?(o.ok?'ok':'bad'):(k===ci?'rev':'')):''}" ${a!==null?'disabled':''} onclick="responder(${k})"><b>${L[k]}</b><span>${esc(o.t)}</span></button>`).join('')}`;
+ if(a!==null){const ok=sim.opts[a].ok;h+=`<div class="fb"><b class="ui" style="color:${ok?'var(--ok)':'var(--bad)'};font-size:18px">${ok?'✅ Correcto':'❌ Incorrecto'}</b><p>${ok?'':'La correcta es la <b>'+L[ci]+'</b>. '}${esc(c.justificacion)}</p><small class="mut">Referencia: ${esc(c.referencia)}</small></div>
+ <div style="margin-top:16px"><b class="ui">¿Qué tan difícil te resultó?</b><div class="dg">${['facil','intermedio','dificil'].map(d=>`<button class="${d} ${sim.dif===d?'sel':''}" onclick="dificultad('${d}')">${{facil:'Fácil',intermedio:'Intermedio',dificil:'Difícil'}[d]}</button>`).join('')}</div></div>`}
+ h+=`</div><div style="text-align:right"><button class="btn" ${a!==null&&sim.dif?'':'disabled'} onclick="siguiente()">${sim.i===N-1?'Ver resultados':'Siguiente caso'}</button></div>`;
+ return h;
+}
+function responder(k){
+ if(sim.ans!==null)return;sim.ans=k;
+ const c=sim.casos[sim.i],ci=sim.opts.findIndex(o=>o.ok),ok=sim.opts[k].ok,L='ABCDE';
+ sim.resp.push({id:c.id,sub:c.subtema,tema:c.tema,pregunta:c.pregunta,ok,dif:null,elegida:L[k]+') '+sim.opts[k].t,correcta:L[ci]+') '+sim.opts[ci].t});
+ const r=S.casos[c.id]||(S.casos[c.id]={sub:c.subtema,tema:c.tema,ok:0,mal:0,pend:false});
+ ok?r.ok++:r.mal++;r.pend=!ok;r.t=Date.now();if(!ok)r.ult=sim.opts[k].t;
+ save();render();
+}
+function dificultad(d){
+ sim.dif=d;const r=sim.resp[sim.resp.length-1];r.dif=d;
+ S.casos[r.id].dif=d;save();render();
+}
+function siguiente(){if(sim.i>=sim.casos.length-1)return terminar();sim.i++;nuevoCaso();render();scrollTo(0,0)}
+function terminar(){
+ const r=sim.resp;
+ if(r.length){const ok=r.filter(x=>x.ok).length;S.sesiones.push({t:Date.now(),tema:sim.tema,n:sim.casos.length,ok,pct:Math.round(ok/sim.casos.length*100)});S.sesiones=S.sesiones.slice(-60);save()}
+ sim.fase='res';render();scrollTo(0,0);
+}
+function resHTML(){
+ const r=sim.resp,N=sim.casos.length,ok=r.filter(x=>x.ok).length,pct=r.length?Math.round(ok/N*100):0,mal=r.filter(x=>!x.ok),sin=N-r.length;
+ const m={};r.forEach(x=>{m[x.sub]=(m[x.sub]||0)+(x.ok?0:3)+pesoDif(x.dif)});
+ const rk=Object.entries(m).sort((a,b)=>b[1]-a[1]);
+ return `<h1>Resultados</h1><div class="card"><div class="stats"><div><b>${pct}%</b>aciertos</div><div><b>${ok} de ${N}</b>correctos</div>${sin?`<div><b>${sin}</b>sin responder</div>`:''}</div>
+ <p class="mut" style="margin:8px 0 0">${r.length?'✔ Guardado: tus errores quedaron registrados en “Mis errores” y “Qué leer”.':'No respondiste casos, no se guardó nada.'}</p></div>
+ ${mal.length?`<h2>Casos que fallaste</h2>${mal.map(x=>`<div class="item"><b class="ui">${esc(x.sub)}</b><br>${esc(x.pregunta)}<br><span class="mut">Tu respuesta:</span> ${esc(x.elegida)}<br><span class="mut">Correcta:</span> ${esc(x.correcta)}</div>`).join('')}`:''}
+ <h2>Qué estudiar de esta sesión</h2>${rk.length&&rk.some(x=>x[1])?`<div class="card">${rk.filter(x=>x[1]).map(([s,p])=>{const e=etiqueta(p);return `<div class="hm"><span>${esc(s)}</span><span class="tr"><i style="width:${Math.min(100,p*14)}%;background:${colorP(p)}"></i></span><span class="ui" style="font-size:13px;min-width:92px">${e[0]} ${e[1]}</span></div>`}).join('')}</div>`:'<div class="card">Sin temas por reforzar en esta sesión.</div>'}
+ <div class="row" style="margin:22px 0"><button class="btn" onclick="sim={fase:'cfg'};render()">Otra simulación</button><button class="ghost" onclick="go('leer')">Ver qué leer</button><button class="ghost" onclick="sim={fase:'lista'};go('inicio')">Inicio</button></div>`;
+}
+
+/* ============ MIS ERRORES ============ */
+function vErrores(){
+ const p=pendientes().sort((a,b)=>b.mal-a.mal||b.t-a.t);
+ let h=`<h1>Mis errores</h1><p class="sub">Casos cuyo último intento fue incorrecto. Si los aciertas después, salen de esta lista.</p>`;
+ if(!p.length)return h+`<div class="card empty">No tienes errores pendientes. 🎉</div>`;
+ h+=`<button class="btn" onclick="cfg={tema:'errores',n:9999};iniciar();cur='sim';render()">Repasar todos (${p.length})</button>`;
+ return h+p.map(e=>{const c=byId(e.id);return `<div class="item"><div class="row sp"><span class="tag">${esc(e.sub)}</span><span class="mut ui" style="font-size:13px">${e.mal} fallo${e.mal>1?'s':''} · ${fecha(e.t)}</span></div>
+ <p style="margin:8px 0"><b>${esc(c.pregunta)}</b></p>
+ <details><summary>Ver caso, respuesta y justificación</summary><p>${esc(c.escenario)}</p>${e.ult?`<p><span class="mut">Tu respuesta:</span> ${esc(e.ult)}</p>`:''}<p><span class="mut">Correcta:</span> ${esc(c.opciones[0])}</p><p>${esc(c.justificacion)}</p><small class="mut">${esc(c.referencia)}</small></details>
+ <div style="margin-top:8px"><button class="ghost sm" onclick="ankiDeError(${e.id})">Crear tarjeta Anki</button></div></div>`}).join('');
+}
+
+/* ============ QUÉ LEER ============ */
+function vLeer(){
+ const pr=prioridad();
+ let h=`<h1>Qué leer</h1><p class="sub">Temas ordenados según tus errores pendientes y la dificultad que marcaste.</p>`;
+ if(!pr.length)return h+`<div class="card empty">Todavía no hay temas por reforzar. Cuando falles casos en un simulador aparecerán aquí.</div>`;
+ return h+pr.map(x=>{const e=etiqueta(x.p),rd=S.leidos[x.sub];return `<div class="card"><div class="row sp"><b class="ui" style="font-size:18px">${esc(x.sub)}</b><span class="ui" style="font-weight:700">${e[0]} ${e[1]}</span></div>
+ <p class="mut" style="margin:4px 0 10px">${esc(nomTema(x.tema))} · ${x.n} caso${x.n>1?'s':''} pendiente${x.n>1?'s':''}${rd?` · leído el ${fecha(rd)}`:''}</p>
+ <div class="row"><button class="ghost sm" onclick="marcarLeido('${esc(x.sub).replace(/'/g,"\\'")}')">${rd?'Volver a marcar':'Ya lo leí'}</button><button class="btn sm" onclick="repasarSub('${esc(x.sub).replace(/'/g,"\\'")}')">Reevaluar este tema</button><button class="ghost sm" onclick="bibDe('${esc(x.sub).replace(/'/g,"\\'")}')">Buscar en biblioteca</button></div></div>`}).join('');
+}
+function marcarLeido(s){S.leidos[s]=Date.now();save();render()}
+function repasarSub(s){
+ const casos=pendientes().filter(c=>c.sub===s).map(c=>byId(c.id));
+ sim={fase:'play',casos:mezclar(casos),i:0,resp:[],tema:'errores'};nuevoCaso();cur='sim';render();scrollTo(0,0);
+}
+function bibDe(s){bibQ=s;go('bib')}
+
+/* ============ BIBLIOTECA ============ */
+let bibQ='';
+function vBib(){
+ return `<h1>Biblioteca de resúmenes</h1><p class="sub">Guarda aquí tus apuntes, enlaces a documentos o resúmenes propios.</p>
+ <details class="card"><summary>➕ Agregar resumen</summary>
+ <label for="bT">Título</label><input id="bT" placeholder="Ej. Intoxicación por organofosforados">
+ <label for="bS">Tema o subtema</label><input id="bS" placeholder="Ej. Toxicología">
+ <label for="bL">Enlace (Drive, Notion, etc.), opcional</label><input id="bL" placeholder="https://...">
+ <label for="bN">Notas o resumen</label><textarea id="bN" placeholder="Puntos clave, perlas clínicas..."></textarea>
+ <p><button class="btn" onclick="addBib()">Guardar resumen</button></p></details>
+ <input id="bQ" placeholder="Buscar por título, tema o texto…" value="${esc(bibQ)}" oninput="bibQ=this.value;filtrarBib()" aria-label="Buscar">
+ <div id="bList"></div>`;
+}
+function addBib(){
+ const t=$('bT').value.trim();if(!t)return toast('Escribe un título');
+ const l=$('bL').value.trim();
+ S.resumenes.unshift({id:Date.now(),t,s:$('bS').value.trim(),l:/^https?:\/\//i.test(l)?l:'',n:$('bN').value.trim(),f:Date.now()});
+ save();toast('Resumen guardado');render();
+}
+function filtrarBib(){
+ const q=bibQ.toLowerCase(),L=S.resumenes.filter(r=>!q||(r.t+' '+r.s+' '+r.n).toLowerCase().includes(q));
+ $('bList').innerHTML=L.length?L.map(r=>`<div class="card"><div class="row sp"><b class="ui" style="font-size:17px">${esc(r.t)}</b>${r.s?`<span class="tag">${esc(r.s)}</span>`:''}</div>
+ ${r.n?`<p style="white-space:pre-wrap">${esc(r.n)}</p>`:''}<div class="row">${r.l?`<a class="ghost sm" style="text-decoration:none;color:var(--teal)" href="${esc(r.l)}" target="_blank" rel="noopener">Abrir enlace</a>`:''}<button class="ghost sm" onclick="delBib(${r.id})">Eliminar</button><span class="mut ui" style="font-size:12px">${fecha(r.f)}</span></div></div>`).join(''):`<div class="empty">${S.resumenes.length?'Sin resultados para tu búsqueda.':'Tu biblioteca está vacía. Agrega tu primer resumen arriba.'}</div>`;
+}
+function delBib(id){if(!confirm('¿Eliminar este resumen?'))return;S.resumenes=S.resumenes.filter(r=>r.id!==id);save();render()}
+
+/* ============ ANKI ============ */
+let rev=null;
+function vAnki(){
+ if(rev&&rev.fase){const c=rev.l[rev.i];
+  return `<h1>Repaso de tarjetas</h1><div class="bar"><i style="width:${(rev.i+1)/rev.l.length*100}%"></i></div><p class="mut ui">Tarjeta ${rev.i+1} de ${rev.l.length}</p>
+  <div class="card flip" onclick="rev.v=!rev.v;render()" style="white-space:pre-wrap">${esc(rev.v?c.b:c.f)}</div><p class="mut" style="text-align:center">Toca la tarjeta para ${rev.v?'volver a la pregunta':'ver la respuesta'}</p>
+  <div class="row" style="justify-content:center"><button class="ghost" onclick="rev.i>0&&(rev.i--,rev.v=false);render()">Anterior</button><button class="btn" onclick="revSig()">${rev.i===rev.l.length-1?'Terminar':'Siguiente'}</button></div>`}
+ return `<h1>Tarjetas Anki</h1><p class="sub">Crea tarjetas y expórtalas a Anki. También puedes crearlas desde “Mis errores”.</p>
+ <details class="card" id="aForm"><summary>➕ Nueva tarjeta</summary>
+ <label for="aF">Frente (pregunta)</label><textarea id="aF"></textarea><label for="aB">Reverso (respuesta)</label><textarea id="aB"></textarea>
+ <label for="aT">Etiqueta</label><input id="aT" placeholder="Ej. pediatria"><p><button class="btn" onclick="addAnki()">Guardar tarjeta</button></p></details>
+ <div class="row" style="margin:10px 0"><button class="btn" ${S.ankis.length?'':'disabled'} onclick="rev={fase:1,l:mezclar(S.ankis),i:0,v:false};render()">Repasar (${S.ankis.length})</button><button class="ghost" ${S.ankis.length?'':'disabled'} onclick="exportAnki()">Exportar CSV para Anki</button></div>
+ ${S.ankis.length?S.ankis.map(a=>`<div class="card"><div class="row sp"><span class="tag">${esc(a.t||'sin etiqueta')}</span><button class="ghost sm" onclick="delAnki(${a.id})">Eliminar</button></div><p><b>${esc(a.f)}</b></p><p class="mut" style="white-space:pre-wrap;margin:0">${esc(a.b)}</p></div>`).join(''):'<div class="empty">Aún no tienes tarjetas.</div>'}`;
+}
+function revSig(){if(rev.i>=rev.l.length-1){rev=null}else{rev.i++;rev.v=false}render()}
+function addAnki(){
+ const f=$('aF').value.trim(),b=$('aB').value.trim();if(!f||!b)return toast('Llena frente y reverso');
+ S.ankis.unshift({id:Date.now(),f,b,t:$('aT').value.trim()});save();toast('Tarjeta guardada');render();
+}
+function ankiDeError(id){
+ const c=byId(id);if(S.ankis.some(a=>a.cid===id))return toast('Ya existe una tarjeta de este caso');
+ S.ankis.unshift({id:Date.now(),cid:id,f:c.pregunta+'\n\n'+c.escenario,b:c.opciones[0]+'\n\n'+c.justificacion,t:'pediatria '+c.subtema.replace(/\s+/g,'_')});
+ save();toast('Tarjeta creada en Anki');render();
+}
+function delAnki(id){S.ankis=S.ankis.filter(a=>a.id!==id);save();render()}
+async function exportAnki(){
+ const q=x=>'"'+String(x).replace(/"/g,'""').replace(/\n/g,'<br>')+'"';
+ const csv='\ufeff'+S.ankis.map(a=>[q(a.f),q(a.b),q(a.t||'')].join(',')).join('\n');
+ try{const d=await claude.use('downloads');if(!d)throw 0;await d.save({filename:'tarjetas-anki.csv',data:csv});toast('Archivo listo')}
+ catch(e){try{await navigator.clipboard.writeText(csv);toast('Copiado: pégalo en un archivo .csv')}catch(_){toast('No se pudo exportar aquí')}}
+}
+
+render();
+</script>
+</body></html>
